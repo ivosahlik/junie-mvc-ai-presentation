@@ -87,6 +87,7 @@ Create Spring MockMVC tests for the controller operations. Verify tests are pass
 4. Add MockMVC tests for controller.
 5. Run test suite to verify all tests pass.
 6. Summarize changes and submit.
+
 ### 7.
 
 Refactor BeerController createBeer method, remove httpheader, add @ResponseStatus created
@@ -100,13 +101,22 @@ MockMVC Tests for the new API Operations. Create a unit test to test all service
 
 1. Inspect current BeerService and BeerServiceImpl to see available methods and patterns.
 2. Update service layer.
+
 - Add updateBeer(Integer id, Beer beer) to BeerService and implement in BeerServiceImpl returning Optional<Beer>.
 - Add deleteBeer(Integer id) to BeerService and implement in BeerServiceImpl returning boolean.
-3. Update BeerController with PUT and DELETE endpoints, including proper HTTP status handling (200 for update success, 404 when not found; 204 for delete success, 404 when not found).
+
+3. Update BeerController with PUT and DELETE endpoints, including proper HTTP status handling (200 for update success,
+   404 when not found; 204 for delete success, 404 when not found).
 4. Add MockMVC tests for update and delete scenarios (success and not found).
-5. Add a unit test for BeerService covering create, getById, list, update, and delete using in-memory H2 with @SpringBootTest.
+5. Add a unit test for BeerService covering create, getById, list, update, and delete using in-memory H2 with
+   @SpringBootTest.
 6. Run all tests and verify passing.
 7. Summarize changes and submit.
+
+### 9.
+
+AI CHAT - add mapstruct dependencies
+/web check for the latest release of mapstruct, provide the maven dependecy for latest release
 
 
 ------------------------------------------------------------------------------------------------------------------------
