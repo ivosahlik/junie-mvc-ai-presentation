@@ -1,6 +1,6 @@
 ## PROMPTS
 
-### Create a JPA Entity with Junie
+## Create a JPA Entity with Junie
 
 ### 1.
 
@@ -32,9 +32,7 @@ timestamp management.
 
 Annotate the createdDate and updated date with JPA annotations.
 
-
-### Create spring data jpa repository and test with June
-
+## Create spring data jpa repository and test with June
 
 ### 3.
 
@@ -59,33 +57,36 @@ operations using the repository for the Beer JPA entity. Verify tests are passin
 
 Add H2 in-memory database configuration for testing
 
-
 ### 5.
 
 Run mvn test locally
 
 ## Plan
+
 1. Inspect BeerRepositoryTest for data/assertion mismatch.
 2. Correct sampleBeer() values to match assertions.
 3. Execute tests using available runner and verify pass.
 4. Provide final instructions for running tests locally with Maven and submit.
 
+## Create service layer and spring mvc controller with junie
 
+### 6.
 
+In the package controllers, create a new Spring MVC Controller for the Beer Entity. Add operations for create, get by id
+and list all. In the package services, create a service interface and implementation. Add methods as needed to support
+the controller operations using the Spring Data Repository. The controller should only use the service, and the service
+will use the Spring Data JPA repository for persistence operations.
 
+Create Spring MockMVC tests for the controller operations. Verify tests are passing.
 
+## Plan
 
-
-
-
-
-
-
-
-
-
-
-
+1. Explore project for existing controllers/services to avoid duplicates.
+2. Implement service layer.
+3. Implement controller.
+4. Add MockMVC tests for controller.
+5. Run test suite to verify all tests pass.
+6. Summarize changes and submit.
 
 
 
