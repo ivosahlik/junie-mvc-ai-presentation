@@ -52,7 +52,7 @@ class BeerControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/beers creates a beer and returns 201 with Location header")
+    @DisplayName("POST /api/v1/beers creates a beer and returns 201")
     void testCreateBeer() throws Exception {
         Beer request = sampleBeerNoId();
         Beer saved = sampleBeerWithId(1);
@@ -63,7 +63,6 @@ class BeerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/beers/1"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.beerName", is("Sample Lager")));

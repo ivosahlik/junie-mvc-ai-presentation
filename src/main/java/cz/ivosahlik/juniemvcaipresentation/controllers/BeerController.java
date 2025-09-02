@@ -2,12 +2,10 @@ package cz.ivosahlik.juniemvcaipresentation.controllers;
 
 import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -21,11 +19,9 @@ public class BeerController {
     }
 
     @PostMapping
-    public ResponseEntity<Beer> createBeer(@RequestBody Beer beer) {
-        Beer saved = beerService.createBeer(beer);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/api/v1/beers/" + saved.getId()));
-        return new ResponseEntity<>(saved, headers, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Beer createBeer(@RequestBody Beer beer) {
+        return beerService.createBeer(beer);
     }
 
     @GetMapping("/{id}")

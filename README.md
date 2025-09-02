@@ -87,9 +87,13 @@ Create Spring MockMVC tests for the controller operations. Verify tests are pass
 4. Add MockMVC tests for controller.
 5. Run test suite to verify all tests pass.
 6. Summarize changes and submit.
+### 7.
 
+Refactor BeerController createBeer method, remove httpheader, add @ResponseStatus created
 
+------------------------------------------------------------------------------------------------------------------------
 
+Ask ChatGPT
 
 ## How to run tests locally
 
