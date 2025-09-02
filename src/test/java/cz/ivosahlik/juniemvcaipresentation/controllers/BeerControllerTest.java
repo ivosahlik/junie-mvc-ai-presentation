@@ -103,4 +103,52 @@ class BeerControllerTest {
                 .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[1].id", is(2)));
     }
+
+    @Test
+    @DisplayName("PUT /api/v1/beers/{id} updates a beer and returns 200")
+    void testUpdateBeerSuccess() throws Exception {
+        Beer request = sampleBeerNoId();
+        Beer updated = sampleBeerWithId(5);
+        updated.setBeerName("Updated Lager");
+
+        given(beerService.updateBeer(eq(5), any(Beer.class))).willReturn(Optional.of(updated));
+
+        mockMvc.perform(put("/api/v1/beers/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(5)))
+                .andExpect(jsonPath("$.beerName", is("Updated Lager")));
+    }
+
+    @Test
+    @DisplayName("PUT /api/v1/beers/{id} returns 404 when beer does not exist")
+    void testUpdateBeerNotFound() throws Exception {
+        Beer request = sampleBeerNoId();
+        given(beerService.updateBeer(eq(404), any(Beer.class))).willReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/v1/beers/404")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/beers/{id} returns 204 when deleted")
+    void testDeleteBeerSuccess() throws Exception {
+        given(beerService.deleteBeer(eq(7))).willReturn(true);
+
+        mockMvc.perform(delete("/api/v1/beers/7"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/beers/{id} returns 404 when not found")
+    void testDeleteBeerNotFound() throws Exception {
+        given(beerService.deleteBeer(eq(888))).willReturn(false);
+
+        mockMvc.perform(delete("/api/v1/beers/888"))
+                .andExpect(status().isNotFound());
+    }
 }

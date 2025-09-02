@@ -91,6 +91,12 @@ Create Spring MockMVC tests for the controller operations. Verify tests are pass
 
 Refactor BeerController createBeer method, remove httpheader, add @ResponseStatus created
 
+### 8.
+
+Inspect the BeerController. Add API Endpoints for update and delete. Create new service methods. Create additional
+MockMVC Tests for the new API Operations. Create a unit test to test all service operations.
+
+
 ------------------------------------------------------------------------------------------------------------------------
 
 Ask ChatGPT
