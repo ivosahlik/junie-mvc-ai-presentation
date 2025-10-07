@@ -9,25 +9,6 @@ entity should use project Lombok Getters, Setters, Builder, NoArgs and AllArgs c
 version. Add the properties String beerName, String beerStyle, String upc, Integer quantityOnHand, BigDecimal price, and
 JPA properties for createdDate and updateDate using LocalDateTime.
 
-## Plan
-
-1. Inspect pom.xml to ensure Lombok, Spring Data JPA, and necessary dependencies exist.
-2. Create Beer entity class under src/main/java/cz/ivosahlik/juniemvcaipresentation/entities with required fields and
-   annotations.
-3. Build the project to verify compilation.
-4. Run tests (if any) to ensure no regressions.
-5. Summarize changes and submit.
-
-### Get structure pom.xml
-
-The pom.xml file has been opened to verify the presence of Lombok and JPA dependencies, which will inform the decision
-on annotation strategies for created and updated timestamps.
-
-### Edit
-
-The Beer entity has been successfully created using JPA and Lombok annotations. It includes functionality for automatic
-timestamp management.
-
 ### 2.
 
 Annotate the createdDate and updated date with JPA annotations.
@@ -79,17 +60,17 @@ will use the Spring Data JPA repository for persistence operations.
 
 Create Spring MockMVC tests for the controller operations. Verify tests are passing.
 
-## Plan
-
-1. Explore project for existing controllers/services to avoid duplicates.
-2. Implement service layer.
-3. Implement controller.
-4. Add MockMVC tests for controller.
-5. Run test suite to verify all tests pass.
-6. Summarize changes and submit.
 ### 7.
 
 Refactor BeerController createBeer method, remove httpheader, add @ResponseStatus created
+
+
+
+
+
+---------------------------------------------
+
+
 
 ### 8.
 
@@ -107,36 +88,3 @@ MockMVC Tests for the new API Operations. Create a unit test to test all service
 5. Add a unit test for BeerService covering create, getById, list, update, and delete using in-memory H2 with @SpringBootTest.
 6. Run all tests and verify passing.
 7. Summarize changes and submit.
-
-
-------------------------------------------------------------------------------------------------------------------------
-
-Ask ChatGPT
-
-## How to run tests locally
-
-Prerequisites:
-
-- Java 21 installed (JAVA_HOME pointing to JDK 21)
-- Maven 3.9+ installed (or use the Maven Wrapper provided in the repo)
-
-Commands:
-
-- Using installed Maven:
-    - mvn -q -DskipTests=false test
-- Using Maven Wrapper (recommended, cross-platform):
-    - macOS/Linux: ./mvnw -q -DskipTests=false test
-    - Windows (PowerShell/CMD): mvnw.cmd -q -DskipTests=false test
-
-What this does:
-
-- Starts an in-memory H2 database for tests (configured via src/test/resources/application.properties)
-- Creates and tears down schema automatically (spring.jpa.hibernate.ddl-auto=create-drop)
-- Runs JUnit 5 tests (Spring Boot manages Surefire/JUnit versions)
-
-Troubleshooting:
-
-- Ensure no local database configuration overrides are present in environment variables or IDE run configurations.
-- If you see Flyway errors about missing migrations, confirm tests are using src/test/resources/application.properties
-  where spring.flyway.enabled=false.
-- If you have multiple JDKs, run: java -version and mvn -v to verify Java 21 is active.
