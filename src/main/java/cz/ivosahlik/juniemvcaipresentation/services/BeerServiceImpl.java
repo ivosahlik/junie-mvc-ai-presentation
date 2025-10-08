@@ -33,23 +33,27 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Optional<Beer> updateBeer(Integer id, Beer beer) {
-        return beerRepository.findById(id).map(existing -> {
-            // Update mutable fields; ignore id/version/createdDate which are managed by JPA
-            existing.setBeerName(beer.getBeerName());
-            existing.setBeerStyle(beer.getBeerStyle());
-            existing.setUpc(beer.getUpc());
-            existing.setQuantityOnHand(beer.getQuantityOnHand());
-            existing.setPrice(beer.getPrice());
-            return beerRepository.save(existing);
-        });
+        return beerRepository
+                .findById(id)
+                .map(existing -> getBeer(beer, existing));
+    }
+
+    private Beer getBeer(Beer beer, Beer existing) {
+        // Update mutable fields; ignore id/version/createdDate which are managed by JPA
+        existing.setBeerName(beer.getBeerName());
+        existing.setBeerStyle(beer.getBeerStyle());
+        existing.setUpc(beer.getUpc());
+        existing.setQuantityOnHand(beer.getQuantityOnHand());
+        existing.setPrice(beer.getPrice());
+        return beerRepository.save(existing);
     }
 
     @Override
     public boolean deleteBeer(Integer id) {
-        if (beerRepository.existsById(id)) {
-            beerRepository.deleteById(id);
-            return true;
+        if (!beerRepository.existsById(id)) {
+            return false;
         }
-        return false;
+        beerRepository.deleteById(id);
+        return true;
     }
 }
