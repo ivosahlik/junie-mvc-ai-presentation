@@ -126,8 +126,6 @@ information to help new developers. Include guidance on organizing the structure
 following best practices. Keep the content short, clear, and practical.
 
 
-------------------------------------------------------------------------------------------------------------------------
-
 ## 11. 
 ### Add junie guidelines
 https://github.com/jetbrains/junie-guidelines
@@ -136,8 +134,12 @@ https://github.com/jetbrains/junie-guidelines
 
 
 
+------------------------------------------------------------------------------------------------------------------------
 
 
+## 12.
+### Add prompts and requirements-draft.md
+### run prompts.md `run prompts/add-dtos/prompts.md` or copy to console and run
 
 
 
