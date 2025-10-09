@@ -139,7 +139,10 @@ https://github.com/jetbrains/junie-guidelines
 ------------------------------------------------------------------------------------------------------------------------
 
 ## 13. 
-run prompts, add pla.md
+INFO: https://youtrack.jetbrains.com/articles/SUPPORT-A-2278/Junie-does-not-follow-instructions-in-guidelines.md-file
+run prompts, add plan.md
+
+guidelines.md doesnt work -> use model SONNET 3.7 or update junie plugin
 
 
 
