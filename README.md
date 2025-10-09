@@ -118,6 +118,12 @@ MockMVC Tests for the new API Operations. Create a unit test to test all service
 AI CHAT - add mapstruct dependencies
 /web check for the latest release of mapstruct, provide the maven dependecy for latest release
 
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+
 ### 10.
 
 Analyze the project structure and tech stack, and create a .junie/guidelines.md file with concise, well-structured
@@ -126,6 +132,29 @@ following best practices. Keep the content short, clear, and practical.
 
 
 ------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Ask ChatGPT
 
