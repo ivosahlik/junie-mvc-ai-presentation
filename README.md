@@ -130,23 +130,16 @@ following best practices. Keep the content short, clear, and practical.
 ### Add junie guidelines
 https://github.com/jetbrains/junie-guidelines
 
-
-
-
-
-------------------------------------------------------------------------------------------------------------------------
-
-
 ## 12.
 ### Add prompts and requirements-draft.md
 ### run prompts.md `run prompts/add-dtos/prompts.md` or copy to console and run
 
 
 
+------------------------------------------------------------------------------------------------------------------------
 
-
-
-
+## 13. 
+run prompts, add pla.md
 
 
 
