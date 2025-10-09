@@ -113,10 +113,28 @@ MockMVC Tests for the new API Operations. Create a unit test to test all service
 6. Run all tests and verify passing.
 7. Summarize changes and submit.
 
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
 ### 9.
 
-AI CHAT - add mapstruct dependencies
+AI CHAT OLD - add mapstruct dependencies
 /web check for the latest release of mapstruct, provide the maven dependecy for latest release
+<version>1.5.5.Final</version>
+
+AI CHAT - claude agent - add mapstruct dependencies
+check for the latest release of mapstruct, provide the maven dependecy for latest release
+<version>1.6.3</version>
+
+
+Github copilot
+check for the latest release of mapstruct, provide the maven dependecy for latest release, could be not final
+<version>1.6.3</version>
+
 
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -150,3 +168,4 @@ Troubleshooting:
 - If you see Flyway errors about missing migrations, confirm tests are using src/test/resources/application.properties
   where spring.flyway.enabled=false.
 - If you have multiple JDKs, run: java -version and mvn -v to verify Java 21 is active.
+
