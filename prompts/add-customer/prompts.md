@@ -13,4 +13,13 @@ Write the task list to `prompts/add-customer/tasks.md` file.
 
 Complete the task list `prompts/add-customer/tasks.md`. Inspect the requirements.md and plan.md and task.md (task list). 
 Implement the tasks in the task list. Focus on completing the tasks in order. Mark the task complete as it is done 
-using [x]. As each step is completed, it is very important to update the task list mark and the task as done [x]. 
+using [x]. As each step is completed, it is very important to update the task list mark and the task as done [x].
+
+
+
+
+-------------------------------------
+
+
+There are failing tests, fix tests, verify all are passing.
+Verify the OpenAPI documentation is updated and test are passing.
