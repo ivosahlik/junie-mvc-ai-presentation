@@ -50,7 +50,7 @@ tags:
     description: Operations for managing beer orders
 
 servers:
-  - url: https://{tenant}/api/v1
+  - url: http://localhost:8080/api/v1
     variables:
       tenant:
         default: www
