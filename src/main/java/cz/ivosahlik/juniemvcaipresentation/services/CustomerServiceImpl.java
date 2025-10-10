@@ -24,7 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
      * Constructor with dependency injection.
      *
      * @param customerRepository the customer repository
-     * @param customerMapper the customer mapper
+     * @param customerMapper     the customer mapper
      */
     public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
@@ -69,11 +69,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public Optional<CustomerDto> updateCustomer(Integer id, CustomerDto customerDto) {
-        return customerRepository.findById(id).map(existing -> {
-            customerMapper.updateEntityFromDto(customerDto, existing);
-            Customer savedCustomer = customerRepository.save(existing);
-            return customerMapper.toDto(savedCustomer);
-        });
+        Customer existingCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Customer with ID " + id + " not found"));
+
+        customerMapper.updateEntityFromDto(customerDto, existingCustomer);
+        Customer savedCustomer = customerRepository.save(existingCustomer);
+        return Optional.of(customerMapper.toDto(savedCustomer));
     }
 
     /**

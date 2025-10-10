@@ -4,6 +4,7 @@ import cz.ivosahlik.juniemvcaipresentation.entities.Customer;
 import cz.ivosahlik.juniemvcaipresentation.mappers.CustomerMapper;
 import cz.ivosahlik.juniemvcaipresentation.models.CustomerDto;
 import cz.ivosahlik.juniemvcaipresentation.repositories.CustomerRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -173,11 +175,7 @@ class CustomerServiceTest {
         // Given
         when(customerRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        // When
-        Optional<CustomerDto> result = customerService.updateCustomer(99, testCustomerDto);
-
-        // Then
-        assertThat(result).isEmpty();
+        assertThrows(IllegalArgumentException.class, () -> customerService.updateCustomer(99, testCustomerDto));
         verify(customerRepository, times(1)).findById(99);
         verify(customerMapper, never()).updateEntityFromDto(any(), any());
         verify(customerRepository, never()).save(any());

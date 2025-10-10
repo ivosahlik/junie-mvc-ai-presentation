@@ -187,7 +187,10 @@ logger.atDebug()
 * Use Flyway for database schema migrations to manage and version database changes in a reliable, repeatable way.
 * Place SQL migration scripts in the default location `src/main/resources/db/migration`.
 * Follow the standard naming pattern `V{version}__{description}.sql`, for example: `V1__Create_user_table.sql`, `V2__Add_email_column.sql`.
-
+* Use H2 compliant SQL syntax for database migrations.
+* When altering tables to add a property with a foreign key constraint, add the new column first and then add the foreign
+  key constraint in a second SQL statement.
+* 
 **Explanation:**
 
 * **Versioned schema changes:** Flyway tracks which migrations have been applied through a dedicated metadata table, ensuring each migration runs exactly once and in the correct order.
@@ -238,3 +241,73 @@ logger.atDebug()
   * Consistency issues
 * Before submitting API changes, always run this test to ensure the API documentation is valid and follows standards.
 * To preview the documentation, run `npm start` which starts a local server to view the API documentation.
+
+## 17. Use Project Lombok
+* Use Lombok to reduce boilerplate code.
+* Enable annotation processing for your IDE to generate boilerplate code for you.
+* When adding builder to a class, if the class extends another class, add `@SuperBuilder` for the builder.
+
+## 18. Use Mapstruct for Type Conversions
+* Use Mapstruct to convert between domain objects and DTOs.
+* Use `@Mapper` to configure the mapping between the two classes.
+* Use `@Mapping` to configure the mapping between the two fields.
+* After modifying a Mapper, recompile the project to generate the new Mapper implementation.
+* Use Mappers to update existing entities.
+
+## 19. Service Operations
+* When updating existing entities, use Mappers to update existing entities. The entity should be fetched from the database
+  and then updated using the mapper prior to saving the entity back to the database.
+
+## 20. Use Early Returns for Cleaner Code
+* Use early returns to handle edge cases, validations, or preconditions at the beginning of methods.
+* Return from the method as early as possible when a condition is not met instead of nesting the main logic in deep if statements.
+* Make the happy path more apparent by removing special cases early.
+
+**Explanation:**
+
+* **Reduced nesting and indentation:** Early returns eliminate deeply nested if-else blocks, resulting in a flatter, more readable code structure.
+* **Error handling separation:** By validating inputs and handling edge cases at the top of a method, you cleanly separate error handling from the main business logic.
+* **Improved code navigation:** When a developer reads your code, they immediately see the preconditions and special cases first, then focus on the main flow.
+
+**Before (without early returns):**
+
+```java
+public Order processOrder(OrderRequest request) {
+    if (request != null) {
+        if (request.getCustomerId() != null) {
+            if (request.getItems() != null && !request.getItems().isEmpty()) {
+                // 20 more lines of actual business logic
+                // nested inside multiple levels of conditions
+                return orderProcessor.process(request);
+            } else {
+                throw new InvalidOrderException("Order must have items");
+            }
+        } else {
+            throw new InvalidOrderException("Order must have a customer ID");
+        }
+    } else {
+        throw new InvalidOrderException("Order request cannot be null");
+    }
+}
+```
+
+**After (with early returns):**
+
+```java
+public Order processOrder(OrderRequest request) {
+    if (request == null) {
+        throw new InvalidOrderException("Order request cannot be null");
+    }
+    
+    if (request.getCustomerId() == null) {
+        throw new InvalidOrderException("Order must have a customer ID");
+    }
+    
+    if (request.getItems() == null || request.getItems().isEmpty()) {
+        throw new InvalidOrderException("Order must have items");
+    }
+    
+    // Main business logic follows with no nesting
+    // 20 lines of code at the same indentation level
+    return orderProcessor.process(request);
+}
