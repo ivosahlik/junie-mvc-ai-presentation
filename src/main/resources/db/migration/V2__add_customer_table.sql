@@ -37,10 +37,6 @@ VALUES ('Default Customer', '123 Default St', 'Default City', 'Default State', '
 UPDATE beer_order
 SET customer_id = (SELECT id FROM customer LIMIT 1);
 
--- Make customer_id NOT NULL after migration
-ALTER TABLE beer_order
-MODIFY COLUMN customer_id INT NOT NULL;
-
 -- Remove old customer_ref column
 ALTER TABLE beer_order
 DROP COLUMN customer_ref;
