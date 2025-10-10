@@ -182,3 +182,15 @@ logger.atDebug()
 * **Multiple outputs and formats:** Direct logs to consoles, rolling files, databases, or remote systems, and choose formats like JSON for seamless ingestion into ELK, Loki, or other log-analysis tools.
 
 * **Better tooling and analysis:** Structured logs and controlled log levels make it easier to filter noise, automate alerts, and visualize application behavior in real time.
+
+## 15. Database Migrations with Flyway
+* Use Flyway for database schema migrations to manage and version database changes in a reliable, repeatable way.
+* Place SQL migration scripts in the default location `src/main/resources/db/migration`.
+* Follow the standard naming pattern `V{version}__{description}.sql`, for example: `V1__Create_user_table.sql`, `V2__Add_email_column.sql`.
+
+**Explanation:**
+
+* **Versioned schema changes:** Flyway tracks which migrations have been applied through a dedicated metadata table, ensuring each migration runs exactly once and in the correct order.
+* **Convention-based locations:** By default, Spring Boot auto-configures Flyway to look for migration scripts in `src/main/resources/db/migration`, though this can be customized via `spring.flyway.locations` property.
+* **Versioning scheme:** The standard naming pattern uses a version prefix (`V`) followed by version number, double underscore separator, and a description with underscores replacing spaces. This ensures migrations execute in the correct sequence.
+* **Database independence:** Migrations work across different database vendors while maintaining the same version history, supporting seamless deployment across environments.
