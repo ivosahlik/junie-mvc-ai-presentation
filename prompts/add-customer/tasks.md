@@ -1,84 +1,105 @@
 # Customer Entity Implementation Tasks
 
 ## 1. Create Customer Entity
-- [x] 1.1. Create a new Customer JPA entity that extends BaseEntity
-- [x] 1.2. Implement the following properties:
-  - [x] 1.2.1. name (String, not null)
-  - [x] 1.2.2. email (String)
-  - [x] 1.2.3. phoneNumber (String)
-  - [x] 1.2.4. addressLine1 (String, not null)
-  - [x] 1.2.5. addressLine2 (String)
-  - [x] 1.2.6. city (String, not null)
-  - [x] 1.2.7. state (String, not null)
-  - [x] 1.2.8. postalCode (String, not null)
-- [x] 1.3. Establish a OneToMany relationship with BeerOrder
+1. [ ] Create a new Customer JPA entity class that extends BaseEntity
+2. [ ] Add required properties:
+   - [ ] name (String, not null)
+   - [ ] email (String)
+   - [ ] phoneNumber (String)
+   - [ ] addressLine1 (String, not null)
+   - [ ] addressLine2 (String)
+   - [ ] city (String, not null)
+   - [ ] state (String, not null)
+   - [ ] postalCode (String, not null)
+3. [ ] Implement OneToMany relationship with BeerOrder
+4. [ ] Add appropriate annotations for JPA mappings
+5. [ ] Add validation annotations for required fields
 
 ## 2. Update BeerOrder Entity
-- [x] 2.1. Add a ManyToOne relationship to Customer
-- [x] 2.2. Update the BeerOrder entity to reference Customer instead of using customerRef
+1. [ ] Add ManyToOne relationship to Customer
+2. [ ] Replace the existing customerRef field with Customer reference
+3. [ ] Update annotations for proper JPA mapping
+4. [ ] Create/update foreign key constraints
 
 ## 3. Create Flyway Migration Script
-- [x] 3.1. Create a new migration script (V2__add_customer_table.sql) to:
-  - [x] 3.1.1. Create the customer table with all required fields
-  - [x] 3.1.2. Alter the beer_order table to add a foreign key reference to the customer table
+1. [ ] Create new migration script V2__add_customer_table.sql
+2. [ ] Add SQL to create customer table with all required fields
+3. [ ] Add SQL to alter beer_order table to add customer_id column
+4. [ ] Add SQL to create foreign key constraint from beer_order to customer
+5. [ ] Add indexes for improved query performance
 
 ## 4. Create DTO and Mapper
-- [x] 4.1. Create CustomerDto class extending BaseEntityDto
-- [x] 4.2. Create CustomerMapper interface using MapStruct
-- [x] 4.3. Implement bidirectional mapping between Customer entity and CustomerDto
+1. [ ] Create CustomerDto class extending BaseEntityDto
+   - [ ] Include all fields from Customer entity
+   - [ ] Add validation annotations for required fields
+2. [ ] Create CustomerMapper interface using MapStruct
+3. [ ] Implement bidirectional mapping methods:
+   - [ ] customerToCustomerDto
+   - [ ] customerDtoToCustomer
+4. [ ] Add any necessary custom mapping logic
 
 ## 5. Create Repository
-- [x] 5.1. Create CustomerRepository interface extending JpaRepository
-- [x] 5.2. Add any necessary custom query methods
+1. [ ] Create CustomerRepository interface extending JpaRepository
+2. [ ] Add findByName method for searching by customer name
+3. [ ] Add findByEmail method for searching by email
+4. [ ] Add any other necessary query methods
 
 ## 6. Create Service Layer
-- [x] 6.1. Create CustomerService interface
-- [x] 6.2. Create CustomerServiceImpl class implementing CustomerService
-- [x] 6.3. Implement CRUD operations:
-  - [x] 6.3.1. getAllCustomers
-  - [x] 6.3.2. getCustomerById
-  - [x] 6.3.3. saveCustomer
-  - [x] 6.3.4. updateCustomer
-  - [x] 6.3.5. deleteCustomer
+1. [ ] Create CustomerService interface
+2. [ ] Create CustomerServiceImpl class implementing CustomerService
+3. [ ] Implement CRUD operations:
+   - [ ] getAllCustomers (with pagination support)
+   - [ ] getCustomerById
+   - [ ] saveCustomer
+   - [ ] updateCustomer
+   - [ ] deleteCustomer
+4. [ ] Add appropriate exception handling
+5. [ ] Add transaction annotations
 
 ## 7. Create Controller
-- [x] 7.1. Create CustomerController class
-- [x] 7.2. Implement RESTful endpoints:
-  - [x] 7.2.1. GET /api/v1/customers - Get all customers
-  - [x] 7.2.2. GET /api/v1/customers/{id} - Get customer by ID
-  - [x] 7.2.3. POST /api/v1/customers - Create new customer
-  - [x] 7.2.4. PUT /api/v1/customers/{id} - Update existing customer
-  - [x] 7.2.5. DELETE /api/v1/customers/{id} - Delete customer
+1. [ ] Create CustomerController class
+2. [ ] Implement RESTful endpoints:
+   - [ ] GET /api/v1/customers - Get all customers (with pagination)
+   - [ ] GET /api/v1/customers/{id} - Get customer by ID
+   - [ ] POST /api/v1/customers - Create new customer
+   - [ ] PUT /api/v1/customers/{id} - Update existing customer
+   - [ ] DELETE /api/v1/customers/{id} - Delete customer
+3. [ ] Add appropriate response status codes
+4. [ ] Implement validation handling
+5. [ ] Add OpenAPI documentation annotations
 
 ## 8. Update OpenAPI Documentation
-- [x] 8.1. Add Customer tag to openapi.yaml
-- [x] 8.2. Create path files for Customer operations:
-  - [x] 8.2.1. customers.yaml (GET all, POST)
-  - [x] 8.2.2. customers_{id}.yaml (GET by ID, PUT, DELETE)
-- [x] 8.3. Create schema file for CustomerDto
+1. [ ] Add Customer tag to openapi.yaml
+2. [ ] Create path files for Customer operations:
+   - [ ] customers.yaml (GET all, POST)
+   - [ ] customers_{id}.yaml (GET by ID, PUT, DELETE)
+3. [ ] Create schema file for CustomerDto
+4. [ ] Add response examples
+5. [ ] Document error responses
 
 ## 9. Write Tests
-- [x] 9.1. Write unit tests for:
-  - [x] 9.1.1. CustomerMapper
-  - [x] 9.1.2. CustomerService
-  - [x] 9.1.3. CustomerController
-- [x] 9.2. Write integration tests for:
-  - [x] 9.2.1. CustomerRepository
-  - [x] 9.2.2. CustomerController (with MockMvc)
+1. [ ] Write unit tests for CustomerMapper
+   - [ ] Test customerToCustomerDto
+   - [ ] Test customerDtoToCustomer
+2. [ ] Write unit tests for CustomerService
+   - [ ] Test getAllCustomers
+   - [ ] Test getCustomerById
+   - [ ] Test saveCustomer
+   - [ ] Test updateCustomer
+   - [ ] Test deleteCustomer
+3. [ ] Write unit tests for CustomerController
+   - [ ] Test all endpoints with MockMvc
+4. [ ] Write integration tests for CustomerRepository
+   - [ ] Test findById
+   - [ ] Test findByName
+   - [ ] Test findByEmail
+   - [ ] Test save/update/delete
+5. [ ] Write integration tests for CustomerController
+   - [ ] Test all endpoints with actual HTTP requests
 
 ## 10. Verify Implementation
-- [x] 10.1. Run all tests to ensure they pass
-- [x] 10.2. Verify that the application builds successfully
-- [x] 10.3. Test the API endpoints manually using a tool like Postman or curl
-
-## Implementation Guidelines
-- [x] 11.1. Use constructor injection for dependencies, making fields final
-- [x] 11.2. Use package-private visibility for components when possible
-- [x] 11.3. Group configuration properties with a common prefix
-- [x] 11.4. Define service methods as transactional units
-- [x] 11.5. Set spring.jpa.open-in-view=false
-- [x] 11.6. Don't expose entities directly in controllers
-- [x] 11.7. Follow REST principles for endpoint design
-- [x] 11.8. Use purpose-built command objects for business operations
-- [x] 11.9. Implement global exception handling
-- [x] 11.10. Use SLF4J for logging, not System.out.println()
+1. [ ] Run all tests to ensure they pass
+2. [ ] Verify that the application builds successfully
+3. [ ] Test the API endpoints manually
+4. [ ] Verify proper error handling
+5. [ ] Check API documentation is accurate and complete
