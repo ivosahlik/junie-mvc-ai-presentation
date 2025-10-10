@@ -55,25 +55,31 @@
 44. [x] Update PUT handler to return ResponseEntity with OK or NOT_FOUND
 45. [x] Update DELETE handler to return ResponseEntity with NO_CONTENT or NOT_FOUND
 
-## 6. Update Tests
-46. [x] Update BeerControllerTest to work with DTOs instead of entities
-47. [x] Mock BeerService using DTO signatures
-48. [x] Update test assertions to validate correct status codes
-49. [x] Update BeerServiceImplTest to work with DTOs
-50. [x] Test entity↔DTO conversions
-51. [x] Verify BeerRepositoryTest still works (likely unchanged)
-52. [x] Run full test suite to ensure all tests pass
+## 6. Refactor BeerController with Lombok
+46. [x] Add @RequiredArgsConstructor to BeerController
+    - [x] Add import for lombok.RequiredArgsConstructor
+    - [x] Apply @RequiredArgsConstructor annotation to BeerController class
+    - [x] Remove explicit constructor in BeerController
 
-## 7. Build and Verify
-53. [x] Run mvn clean verify to ensure project builds successfully
-54. [x] Verify MapStruct generates mapper implementations correctly
-55. [x] Verify Lombok generates boilerplate code correctly
-56. [x] Ensure all tests pass
-57. [x] Verify API functionality manually if possible
+## 7. Update Tests
+47. [x] Update BeerControllerTest to work with DTOs instead of entities
+48. [x] Mock BeerService using DTO signatures
+49. [x] Update test assertions to validate correct status codes
+50. [x] Update BeerServiceImplTest to work with DTOs
+51. [x] Test entity↔DTO conversions
+52. [x] Verify BeerRepositoryTest still works (likely unchanged)
+53. [x] Run full test suite to ensure all tests pass
 
-## 8. Compliance with Guidelines
-58. [x] Ensure constructor injection is used throughout
-59. [x] Make classes/methods package-private where appropriate
-60. [x] Verify validation is properly enforced at DTO boundary
-61. [x] Confirm transaction boundaries are clearly defined at service layer
-62. [x] Document any suggestions for future improvements (e.g., centralized exception handling)
+## 8. Build and Verify
+54. [x] Run mvn clean verify to ensure project builds successfully
+55. [x] Verify MapStruct generates mapper implementations correctly
+56. [x] Verify Lombok generates boilerplate code correctly
+57. [x] Ensure all tests pass
+58. [x] Verify API functionality manually if possible
+
+## 9. Compliance with Guidelines
+59. [x] Ensure constructor injection is used throughout
+60. [x] Make classes/methods package-private where appropriate
+61. [x] Verify validation is properly enforced at DTO boundary
+62. [x] Confirm transaction boundaries are clearly defined at service layer
+63. [x] Document any suggestions for future improvements (e.g., centralized exception handling)

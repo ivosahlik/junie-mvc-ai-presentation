@@ -3,6 +3,7 @@ package cz.ivosahlik.juniemvcaipresentation.controllers;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/beers")
+@RequiredArgsConstructor
 class BeerController {
 
     private final BeerService beerService;
-
-    BeerController(BeerService beerService) {
-        this.beerService = beerService;
-    }
 
     @PostMapping
     public ResponseEntity<BeerDto> createBeer(@Valid @RequestBody BeerDto beerDto) {

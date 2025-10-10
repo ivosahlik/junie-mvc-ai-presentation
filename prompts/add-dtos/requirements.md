@@ -92,3 +92,6 @@ Scope: Refactor the Beer API so the web and service layers use explicit DTOs ins
 - Service layer uses DTOs end‑to‑end with appropriate transaction annotations and constructor injection.
 - Controller consumes/produces `BeerDto`, validates requests, and returns correct HTTP status codes.
 - The application builds successfully with MapStruct and Lombok; updated tests compile and pass.
+
+## 10. Add lombok to controllers
+- Edit BeerController with lombok, add @RequireArgsConstructor
