@@ -135,14 +135,45 @@ https://github.com/jetbrains/junie-guidelines
 ### run prompts.md `run prompts/add-dtos/prompts.md` or copy to console and run
 
 
-
-------------------------------------------------------------------------------------------------------------------------
-
 ## 13. 
 INFO: https://youtrack.jetbrains.com/articles/SUPPORT-A-2278/Junie-does-not-follow-instructions-in-guidelines.md-file
 run prompts, add plan.md
 
 guidelines.md doesnt work -> use model SONNET 3.7 or update junie plugin
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+## 14.
+### Prompts
+put to terminal: Analyze the attached ERD image. Create detailed instructions for a Java developer to implement the relationships in JPA with Lombok.
+set ASK_MODEL to SONNET 3.7
+add erp image
+
+result: 
+![img.png](img.png)
+
+create: requirements-draft.md
+
+
+#### Presentation
+
+Presentation Tasks:
+
+- Update the requirements-draft.md to include instructions for the creation of repositories, services, dtos, mappers, controllers and tests. Use language to instruct it to implement CRUD operations
+
+- Use Junie to refine the requirements
+
+- Use Junie to create an implementation plan
+
+- Use Junie to create a task list
+
+- Have Junie write the code
 
 
 
