@@ -1,6 +1,6 @@
 package cz.ivosahlik.juniemvcaipresentation.controllers;
 
-import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -35,8 +35,8 @@ class BeerControllerTest {
     @MockBean
     BeerService beerService;
 
-    private Beer sampleBeerNoId() {
-        return Beer.builder()
+    private BeerDto sampleBeerDtoNoId() {
+        return BeerDto.builder()
                 .beerName("Sample Lager")
                 .beerStyle("Lager")
                 .upc("1234567890123")
@@ -45,19 +45,19 @@ class BeerControllerTest {
                 .build();
     }
 
-    private Beer sampleBeerWithId(Integer id) {
-        Beer b = sampleBeerNoId();
-        b.setId(id);
-        return b;
+    private BeerDto sampleBeerDtoWithId(Integer id) {
+        BeerDto dto = sampleBeerDtoNoId();
+        dto.setId(id);
+        return dto;
     }
 
     @Test
     @DisplayName("POST /api/v1/beers creates a beer and returns 201")
     void testCreateBeer() throws Exception {
-        Beer request = sampleBeerNoId();
-        Beer saved = sampleBeerWithId(1);
+        BeerDto request = sampleBeerDtoNoId();
+        BeerDto saved = sampleBeerDtoWithId(1);
 
-        given(beerService.createBeer(any(Beer.class))).willReturn(saved);
+        given(beerService.createBeer(any(BeerDto.class))).willReturn(saved);
 
         mockMvc.perform(post("/api/v1/beers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +71,7 @@ class BeerControllerTest {
     @Test
     @DisplayName("GET /api/v1/beers/{id} returns beer when found")
     void testGetBeerByIdFound() throws Exception {
-        Beer saved = sampleBeerWithId(2);
+        BeerDto saved = sampleBeerDtoWithId(2);
         given(beerService.getBeerById(eq(2))).willReturn(Optional.of(saved));
 
         mockMvc.perform(get("/api/v1/beers/2"))
@@ -93,7 +93,7 @@ class BeerControllerTest {
     @Test
     @DisplayName("GET /api/v1/beers returns list of beers")
     void testListBeers() throws Exception {
-        List<Beer> list = Arrays.asList(sampleBeerWithId(1), sampleBeerWithId(2));
+        List<BeerDto> list = Arrays.asList(sampleBeerDtoWithId(1), sampleBeerDtoWithId(2));
         given(beerService.listBeers()).willReturn(list);
 
         mockMvc.perform(get("/api/v1/beers"))
@@ -107,11 +107,11 @@ class BeerControllerTest {
     @Test
     @DisplayName("PUT /api/v1/beers/{id} updates a beer and returns 200")
     void testUpdateBeerSuccess() throws Exception {
-        Beer request = sampleBeerNoId();
-        Beer updated = sampleBeerWithId(5);
+        BeerDto request = sampleBeerDtoNoId();
+        BeerDto updated = sampleBeerDtoWithId(5);
         updated.setBeerName("Updated Lager");
 
-        given(beerService.updateBeer(eq(5), any(Beer.class))).willReturn(Optional.of(updated));
+        given(beerService.updateBeer(eq(5), any(BeerDto.class))).willReturn(Optional.of(updated));
 
         mockMvc.perform(put("/api/v1/beers/5")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -125,8 +125,8 @@ class BeerControllerTest {
     @Test
     @DisplayName("PUT /api/v1/beers/{id} returns 404 when beer does not exist")
     void testUpdateBeerNotFound() throws Exception {
-        Beer request = sampleBeerNoId();
-        given(beerService.updateBeer(eq(404), any(Beer.class))).willReturn(Optional.empty());
+        BeerDto request = sampleBeerDtoNoId();
+        given(beerService.updateBeer(eq(404), any(BeerDto.class))).willReturn(Optional.empty());
 
         mockMvc.perform(put("/api/v1/beers/404")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,50 +1,62 @@
 package cz.ivosahlik.juniemvcaipresentation.services;
 
 import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
+import cz.ivosahlik.juniemvcaipresentation.mappers.BeerMapper;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.repositories.BeerRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BeerServiceImpl implements BeerService {
 
     private final BeerRepository beerRepository;
+    private final BeerMapper beerMapper;
 
-    public BeerServiceImpl(BeerRepository beerRepository) {
+    public BeerServiceImpl(BeerRepository beerRepository, BeerMapper beerMapper) {
         this.beerRepository = beerRepository;
+        this.beerMapper = beerMapper;
     }
 
     @Override
-    public Beer createBeer(Beer beer) {
-        return beerRepository.save(beer);
+    @Transactional
+    public BeerDto createBeer(BeerDto beerDto) {
+        Beer beer = beerMapper.toEntity(beerDto);
+        Beer savedBeer = beerRepository.save(beer);
+        return beerMapper.toDto(savedBeer);
     }
 
     @Override
-    public Optional<Beer> getBeerById(Integer id) {
-        return beerRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<BeerDto> getBeerById(Integer id) {
+        return beerRepository.findById(id)
+                .map(beerMapper::toDto);
     }
 
     @Override
-    public List<Beer> listBeers() {
-        return beerRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<BeerDto> listBeers() {
+        return beerRepository.findAll().stream()
+                .map(beerMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Beer> updateBeer(Integer id, Beer beer) {
+    @Transactional
+    public Optional<BeerDto> updateBeer(Integer id, BeerDto beerDto) {
         return beerRepository.findById(id).map(existing -> {
-            // Update mutable fields; ignore id/version/createdDate which are managed by JPA
-            existing.setBeerName(beer.getBeerName());
-            existing.setBeerStyle(beer.getBeerStyle());
-            existing.setUpc(beer.getUpc());
-            existing.setQuantityOnHand(beer.getQuantityOnHand());
-            existing.setPrice(beer.getPrice());
-            return beerRepository.save(existing);
+            beerMapper.updateEntityFromDto(beerDto, existing);
+            Beer savedBeer = beerRepository.save(existing);
+            return beerMapper.toDto(savedBeer);
         });
     }
 
     @Override
+    @Transactional
     public boolean deleteBeer(Integer id) {
         if (beerRepository.existsById(id)) {
             beerRepository.deleteById(id);

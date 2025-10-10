@@ -1,6 +1,6 @@
 package cz.ivosahlik.juniemvcaipresentation.services;
 
-import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +21,8 @@ class BeerServiceImplTest {
     @Autowired
     BeerService beerService;
 
-    private Beer sampleBeerNoId() {
-        return Beer.builder()
+    private BeerDto sampleBeerDtoNoId() {
+        return BeerDto.builder()
                 .beerName("Service Lager")
                 .beerStyle("Lager")
                 .upc("svc-0001")
@@ -40,15 +40,15 @@ class BeerServiceImplTest {
     @DisplayName("Service operations: create, list, getById, update, delete")
     void testServiceOperations() {
         // create
-        Beer saved = beerService.createBeer(sampleBeerNoId());
+        BeerDto saved = beerService.createBeer(sampleBeerDtoNoId());
         assertThat(saved.getId()).isNotNull();
 
         // list
-        List<Beer> list = beerService.listBeers();
+        List<BeerDto> list = beerService.listBeers();
         assertThat(list).isNotEmpty();
 
         // get by id (found)
-        Optional<Beer> byId = beerService.getBeerById(saved.getId());
+        Optional<BeerDto> byId = beerService.getBeerById(saved.getId());
         assertThat(byId).isPresent();
         assertThat(byId.get().getBeerName()).isEqualTo("Service Lager");
 
@@ -56,14 +56,14 @@ class BeerServiceImplTest {
         assertThat(beerService.getBeerById(999999)).isNotPresent();
 
         // update (found)
-        Beer updateRequest = Beer.builder()
+        BeerDto updateRequest = BeerDto.builder()
                 .beerName("Service Lager Updated")
                 .beerStyle("Pilsner")
                 .upc("svc-0001-upd")
                 .quantityOnHand(30)
                 .price(new BigDecimal("6.00"))
                 .build();
-        Optional<Beer> updated = beerService.updateBeer(saved.getId(), updateRequest);
+        Optional<BeerDto> updated = beerService.updateBeer(saved.getId(), updateRequest);
         assertThat(updated).isPresent();
         assertThat(updated.get().getBeerName()).isEqualTo("Service Lager Updated");
         assertThat(updated.get().getBeerStyle()).isEqualTo("Pilsner");

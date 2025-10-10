@@ -1,19 +1,19 @@
 package cz.ivosahlik.juniemvcaipresentation.services;
 
-import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BeerService {
 
-    Beer createBeer(Beer beer);
+    BeerDto createBeer(BeerDto beer);
 
-    Optional<Beer> getBeerById(Integer id);
+    Optional<BeerDto> getBeerById(Integer id);
 
-    List<Beer> listBeers();
+    List<BeerDto> listBeers();
 
-    Optional<Beer> updateBeer(Integer id, Beer beer);
+    Optional<BeerDto> updateBeer(Integer id, BeerDto beer);
 
     boolean deleteBeer(Integer id);
 }

@@ -1,7 +1,8 @@
 package cz.ivosahlik.juniemvcaipresentation.controllers;
 
-import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,35 +11,35 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/beers")
-public class BeerController {
+class BeerController {
 
     private final BeerService beerService;
 
-    public BeerController(BeerService beerService) {
+    BeerController(BeerService beerService) {
         this.beerService = beerService;
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Beer createBeer(@RequestBody Beer beer) {
-        return beerService.createBeer(beer);
+    public ResponseEntity<BeerDto> createBeer(@Valid @RequestBody BeerDto beerDto) {
+        BeerDto created = beerService.createBeer(beerDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Beer> getBeerById(@PathVariable Integer id) {
+    public ResponseEntity<BeerDto> getBeerById(@PathVariable Integer id) {
         return beerService.getBeerById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<Beer>> listBeers() {
+    public ResponseEntity<List<BeerDto>> listBeers() {
         return ResponseEntity.ok(beerService.listBeers());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Beer> updateBeer(@PathVariable Integer id, @RequestBody Beer beer) {
-        return beerService.updateBeer(id, beer)
+    public ResponseEntity<BeerDto> updateBeer(@PathVariable Integer id, @Valid @RequestBody BeerDto beerDto) {
+        return beerService.updateBeer(id, beerDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
