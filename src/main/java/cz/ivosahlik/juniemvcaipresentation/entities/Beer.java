@@ -1,32 +1,40 @@
 package cz.ivosahlik.juniemvcaipresentation.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * Entity representing a beer in the system.
+ */
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "beer")
-public class Beer {
+@Builder
+public class Beer extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Version
-    private Integer version;
+    @Builder
+    public Beer(Integer id, Integer version, String beerName, String beerStyle, String upc,
+                Integer quantityOnHand, BigDecimal price, Set<BeerOrderLine> beerOrderLines,
+                LocalDateTime updateDate, LocalDateTime createdDate) {
+        super.setId(id);
+        super.setVersion(version);
+        this.beerName = beerName;
+        this.beerStyle = beerStyle;
+        this.upc = upc;
+        this.quantityOnHand = quantityOnHand;
+        this.price = price;
+        this.beerOrderLines = beerOrderLines != null ? beerOrderLines : new HashSet<>();
+        this.createdDate = createdDate;
+        this.updateDate = updateDate;
+    }
 
     @Column(length = 255)
     private String beerName;
@@ -42,10 +50,8 @@ public class Beer {
     @Column(precision = 19, scale = 2)
     private BigDecimal price;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdDate;
-
-    @UpdateTimestamp
-    private LocalDateTime updateDate;
+    @OneToMany(mappedBy = "beer")
+    @ToString.Exclude
+    @Builder.Default
+    private Set<BeerOrderLine> beerOrderLines = new HashSet<>();
 }
