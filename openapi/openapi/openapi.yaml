@@ -48,13 +48,11 @@ tags:
     description: Operations for managing beer products
   - name: Beer Orders
     description: Operations for managing beer orders
+  - name: Customer
+    description: Operations for managing customers
 
 servers:
   - url: http://localhost:8080/api/v1
-    variables:
-      tenant:
-        default: www
-        description: Your tenant id
   - url: https://example.com/api/v1
 paths:
   '/api/v1/beers':
@@ -65,8 +63,14 @@ paths:
     $ref: '../paths/api_v1_beer-orders.yaml'
   '/api/v1/beer-orders/{id}':
     $ref: '../paths/api_v1_beer-orders_{id}.yaml'
-  '/api/v1/beer-orders/search':
-    $ref: '../paths/api_v1_beer-orders_search.yaml'
+  '/api/v1/beer-orders/search/by-name':
+    $ref: '../paths/api_v1_beer-orders_search_by-name.yaml'
+  '/api/v1/beer-orders/search/by-customer':
+    $ref: '../paths/api_v1_beer-orders_search_by-customer.yaml'
+  '/api/v1/customers':
+    $ref: '../paths/api_v1_customers.yaml'
+  '/api/v1/customers/{id}':
+    $ref: '../paths/api_v1_customers_{id}.yaml'
 
 security:
   - BearerAuth: []

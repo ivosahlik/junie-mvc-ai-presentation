@@ -34,12 +34,20 @@ public interface BeerOrderService {
     List<BeerOrderDto> listBeerOrders();
 
     /**
-     * Find beer orders by customer reference.
+     * Find beer orders by customer name (case-insensitive partial match).
      *
-     * @param customerRef the customer reference to search for
+     * @param customerName the customer name to search for
      * @return a list of matching beer orders
      */
-    List<BeerOrderDto> findBeerOrdersByCustomerRef(String customerRef);
+    List<BeerOrderDto> findBeerOrdersByCustomerName(String customerName);
+
+    /**
+     * Find all beer orders for a specific customer.
+     *
+     * @param customerId the customer ID
+     * @return a list of beer orders for the specified customer
+     */
+    List<BeerOrderDto> findBeerOrdersByCustomerId(Integer customerId);
 
     /**
      * Update an existing beer order.

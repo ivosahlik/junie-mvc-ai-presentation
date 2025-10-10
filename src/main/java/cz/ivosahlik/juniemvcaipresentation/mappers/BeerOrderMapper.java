@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 /**
  * Mapper interface for converting between BeerOrder entity and BeerOrderDto.
  */
-@Mapper(componentModel = "spring", uses = {BeerOrderLineMapper.class})
+@Mapper(componentModel = "spring", uses = {BeerOrderLineMapper.class, CustomerMapper.class})
 public interface BeerOrderMapper {
 
     /**

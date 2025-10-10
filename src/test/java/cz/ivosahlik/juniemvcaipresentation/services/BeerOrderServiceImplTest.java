@@ -3,6 +3,7 @@ package cz.ivosahlik.juniemvcaipresentation.services;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerOrderDto;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerOrderLineDto;
+import cz.ivosahlik.juniemvcaipresentation.models.CustomerDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,20 @@ class BeerOrderServiceImplTest {
     @Autowired
     BeerService beerService;
 
+    @Autowired
+    CustomerService customerService;
+
+    private CustomerDto createTestCustomer(String name) {
+        CustomerDto customerDto = CustomerDto.builder()
+                .name(name)
+                .addressLine1("123 Test Street")
+                .city("Test City")
+                .state("TS")
+                .postalCode("12345")
+                .build();
+        return customerService.createCustomer(customerDto);
+    }
+
     private BeerOrderDto createSampleBeerOrderDto() {
         // First get a real beer from the database to associate with the order
         List<BeerDto> beers = beerService.listBeers();
@@ -45,6 +60,9 @@ class BeerOrderServiceImplTest {
 
         BeerDto beer = beers.get(0);
 
+        // Create a test customer
+        CustomerDto customer = createTestCustomer("Test Customer");
+
         // Create a beer order line using the real beer
         BeerOrderLineDto lineDto = BeerOrderLineDto.builder()
                 .orderQuantity(5)
@@ -55,7 +73,7 @@ class BeerOrderServiceImplTest {
 
         // Create a beer order with the line
         return BeerOrderDto.builder()
-                .customerRef("TEST-CUSTOMER-123")
+                .customer(customer)
                 .status("NEW")
                 .paymentAmount(new BigDecimal("29.95"))
                 .beerOrderLines(Collections.singletonList(lineDto))
@@ -70,7 +88,8 @@ class BeerOrderServiceImplTest {
 
         assertThat(created.getId()).isNotNull();
         assertThat(created.getVersion()).isNotNull();
-        assertThat(created.getCustomerRef()).isEqualTo("TEST-CUSTOMER-123");
+        assertThat(created.getCustomer()).isNotNull();
+        assertThat(created.getCustomer().getName()).isEqualTo("Test Customer");
         assertThat(created.getCreatedDate()).isNotNull();
         assertThat(created.getUpdateDate()).isNotNull();
         assertThat(created.getBeerOrderLines()).hasSize(1);
@@ -88,7 +107,8 @@ class BeerOrderServiceImplTest {
 
         assertThat(found).isPresent();
         assertThat(found.get().getId()).isEqualTo(created.getId());
-        assertThat(found.get().getCustomerRef()).isEqualTo("TEST-CUSTOMER-123");
+        assertThat(found.get().getCustomer()).isNotNull();
+        assertThat(found.get().getCustomer().getName()).isEqualTo("Test Customer");
         assertThat(found.get().getBeerOrderLines()).hasSize(1);
 
         // Test with non-existent ID
@@ -110,26 +130,66 @@ class BeerOrderServiceImplTest {
     }
 
     @Test
-    @DisplayName("Find beer orders by customer ref should return matching orders")
-    void testFindBeerOrdersByCustomerRef() {
-        // Create orders with different customer refs
-        BeerOrderDto order1 = createSampleBeerOrderDto();
-        order1.setCustomerRef("SPECIAL-CUSTOMER-111");
+    @DisplayName("Find beer orders by customer name should return matching orders")
+    void testFindBeerOrdersByCustomerName() {
+        // Create customers with different names
+        CustomerDto specialCustomer1 = createTestCustomer("Special Customer One");
+        CustomerDto regularCustomer = createTestCustomer("Regular Customer");
+        CustomerDto specialCustomer2 = createTestCustomer("Special Customer Two");
 
-        BeerOrderDto order2 = createSampleBeerOrderDto();
-        order2.setCustomerRef("REGULAR-CUSTOMER-222");
+        // Create a beer if none exists
+        List<BeerDto> beers = beerService.listBeers();
+        BeerDto beer;
+        if (beers.isEmpty()) {
+            // Create a beer if none exists
+            BeerDto beerDto = BeerDto.builder()
+                    .beerName("Test Beer")
+                    .beerStyle("IPA")
+                    .upc("123456789")
+                    .price(new BigDecimal("5.99"))
+                    .quantityOnHand(10)
+                    .build();
+            beer = beerService.createBeer(beerDto);
+        } else {
+            beer = beers.get(0);
+        }
 
-        BeerOrderDto order3 = createSampleBeerOrderDto();
-        order3.setCustomerRef("SPECIAL-CUSTOMER-333");
+        BeerOrderLineDto lineDto = BeerOrderLineDto.builder()
+                .orderQuantity(5)
+                .quantityAllocated(0)
+                .status("NEW")
+                .beer(beer)
+                .build();
+
+        BeerOrderDto order1 = BeerOrderDto.builder()
+                .customer(specialCustomer1)
+                .status("NEW")
+                .paymentAmount(new BigDecimal("29.95"))
+                .beerOrderLines(Collections.singletonList(lineDto))
+                .build();
+
+        BeerOrderDto order2 = BeerOrderDto.builder()
+                .customer(regularCustomer)
+                .status("NEW")
+                .paymentAmount(new BigDecimal("19.95"))
+                .beerOrderLines(Collections.singletonList(lineDto))
+                .build();
+
+        BeerOrderDto order3 = BeerOrderDto.builder()
+                .customer(specialCustomer2)
+                .status("NEW")
+                .paymentAmount(new BigDecimal("39.95"))
+                .beerOrderLines(Collections.singletonList(lineDto))
+                .build();
 
         beerOrderService.createBeerOrder(order1);
         beerOrderService.createBeerOrder(order2);
         beerOrderService.createBeerOrder(order3);
 
-        // Search for orders
-        List<BeerOrderDto> specialOrders = beerOrderService.findBeerOrdersByCustomerRef("SPECIAL");
-        List<BeerOrderDto> regularOrders = beerOrderService.findBeerOrdersByCustomerRef("REGULAR");
-        List<BeerOrderDto> nonExistentOrders = beerOrderService.findBeerOrdersByCustomerRef("NONEXISTENT");
+        // Search for orders by customer name
+        List<BeerOrderDto> specialOrders = beerOrderService.findBeerOrdersByCustomerName("Special");
+        List<BeerOrderDto> regularOrders = beerOrderService.findBeerOrdersByCustomerName("Regular");
+        List<BeerOrderDto> nonExistentOrders = beerOrderService.findBeerOrdersByCustomerName("Nonexistent");
 
         assertThat(specialOrders).hasSize(2);
         assertThat(regularOrders).hasSize(1);
@@ -143,8 +203,11 @@ class BeerOrderServiceImplTest {
         BeerOrderDto created = beerOrderService.createBeerOrder(createSampleBeerOrderDto());
         Integer orderId = created.getId();
 
+        // Create a new customer for the update
+        CustomerDto updatedCustomer = createTestCustomer("Updated Customer");
+
         // Prepare update
-        created.setCustomerRef("UPDATED-REF");
+        created.setCustomer(updatedCustomer);
         created.setStatus("PROCESSING");
         created.setPaymentAmount(new BigDecimal("39.95"));
 
@@ -165,7 +228,8 @@ class BeerOrderServiceImplTest {
         Optional<BeerOrderDto> updated = beerOrderService.updateBeerOrder(orderId, created);
 
         assertThat(updated).isPresent();
-        assertThat(updated.get().getCustomerRef()).isEqualTo("UPDATED-REF");
+        assertThat(updated.get().getCustomer()).isNotNull();
+        assertThat(updated.get().getCustomer().getName()).isEqualTo("Updated Customer");
         assertThat(updated.get().getStatus()).isEqualTo("PROCESSING");
         assertThat(updated.get().getPaymentAmount()).isEqualTo(new BigDecimal("39.95"));
 

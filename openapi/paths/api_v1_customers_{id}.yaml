@@ -1,0 +1,116 @@
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: The unique identifier of the customer
+    schema:
+      type: integer
+      format: int32
+
+get:
+  tags:
+    - Customer
+  summary: Get customer by ID
+  operationId: getCustomerById
+  description: Retrieves the details of a specific customer by ID
+  responses:
+    '200':
+      description: Customer details successfully retrieved
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/CustomerDto.yaml'
+    '404':
+      description: Customer not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Customer with ID 123 not found"
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+    '403':
+      description: Forbidden - Not enough permissions to access the resource
+
+put:
+  tags:
+    - Customer
+  summary: Update customer
+  operationId: updateCustomer
+  description: Updates an existing customer with the provided details
+  requestBody:
+    description: Customer object with updated details
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/CustomerDto.yaml'
+  responses:
+    '200':
+      description: Customer successfully updated
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/CustomerDto.yaml'
+    '404':
+      description: Customer not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Customer with ID 123 not found"
+    '400':
+      description: Invalid request body - validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Validation failed"
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: "name"
+                    message:
+                      type: string
+                      example: "must not be blank"
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+    '403':
+      description: Forbidden - Not enough permissions to access the resource
+
+delete:
+  tags:
+    - Customer
+  summary: Delete customer
+  operationId: deleteCustomer
+  description: Deletes a specific customer by ID
+  responses:
+    '204':
+      description: Customer successfully deleted
+    '404':
+      description: Customer not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Customer with ID 123 not found"
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+    '403':
+      description: Forbidden - Not enough permissions to access the resource

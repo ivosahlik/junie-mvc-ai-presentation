@@ -3,6 +3,7 @@ package cz.ivosahlik.juniemvcaipresentation.repositories;
 import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
 import cz.ivosahlik.juniemvcaipresentation.entities.BeerOrder;
 import cz.ivosahlik.juniemvcaipresentation.entities.BeerOrderLine;
+import cz.ivosahlik.juniemvcaipresentation.entities.Customer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ class BeerOrderLineRepositoryTest {
     @Autowired
     BeerOrderRepository beerOrderRepository;
 
+    @Autowired
+    CustomerRepository customerRepository;
+
     private Beer createAndSaveBeer(String name, String style) {
         Beer beer = Beer.builder()
                 .beerName(name)
@@ -37,9 +41,21 @@ class BeerOrderLineRepositoryTest {
         return beerRepository.save(beer);
     }
 
-    private BeerOrder createAndSaveBeerOrder(String customerRef) {
+    private Customer createAndSaveCustomer(String name) {
+        Customer customer = Customer.builder()
+                .name(name)
+                .addressLine1("123 Test St")
+                .city("Test City")
+                .state("Test State")
+                .postalCode("12345")
+                .build();
+        return customerRepository.save(customer);
+    }
+
+    private BeerOrder createAndSaveBeerOrder(String customerName) {
+        Customer customer = createAndSaveCustomer(customerName);
         BeerOrder beerOrder = BeerOrder.builder()
-                .customerRef(customerRef)
+                .customer(customer)
                 .paymentAmount(new BigDecimal("39.99"))
                 .status("NEW")
                 .build();

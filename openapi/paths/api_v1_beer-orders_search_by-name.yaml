@@ -1,17 +1,17 @@
 get:
   tags:
     - Beer Orders
-  summary: Search beer orders by customer reference
-  operationId: searchBeerOrders
-  description: Search for beer orders by customer reference
+  summary: Search beer orders by customer name
+  operationId: searchBeerOrdersByCustomerName
+  description: Search for beer orders by customer name (case-insensitive partial match)
   parameters:
-    - name: customerRef
+    - name: customerName
       in: query
-      description: Customer reference to search for
+      description: Customer name to search for
       required: true
       schema:
         type: string
-        example: "CUS-123456"
+        example: "John"
   responses:
     '200':
       description: List of matching beer orders

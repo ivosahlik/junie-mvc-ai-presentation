@@ -20,17 +20,18 @@ import java.util.Set;
 public class BeerOrder extends BaseEntity {
 
     @Builder
-    public BeerOrder(Integer id, Integer version, String customerRef,
+    public BeerOrder(Integer id, Integer version, Customer customer,
                     BigDecimal paymentAmount, String status, Set<BeerOrderLine> beerOrderLines) {
         super.setId(id);
         super.setVersion(version);
-        this.customerRef = customerRef;
+        this.customer = customer;
         this.paymentAmount = paymentAmount;
         this.status = status;
         this.beerOrderLines = beerOrderLines != null ? beerOrderLines : new HashSet<>();
     }
 
-    private String customerRef;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Customer customer;
 
     @Column(precision = 19, scale = 2)
     private BigDecimal paymentAmount;

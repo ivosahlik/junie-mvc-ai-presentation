@@ -1,8 +1,7 @@
 package cz.ivosahlik.juniemvcaipresentation.models;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +26,9 @@ public class BeerOrderDto {
     private Integer id;
     private Integer version;
 
-    @NotBlank(message = "Customer reference is required")
-    @Size(max = 255, message = "Customer reference must be at most 255 characters")
-    private String customerRef;
+    @NotNull(message = "Customer is required")
+    @Valid
+    private CustomerDto customer;
 
     private BigDecimal paymentAmount;
     private String status;

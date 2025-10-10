@@ -58,15 +58,29 @@ class BeerOrderController {
     }
 
     /**
-     * Search beer orders by customer reference.
+     * Search beer orders by customer name (case-insensitive partial match).
      *
-     * @param customerRef the customer reference to search for
+     * @param customerName the customer name to search for
      * @return list of matching beer orders
      */
-    @GetMapping("/search")
-    ResponseEntity<List<BeerOrderDto>> searchBeerOrders(@RequestParam String customerRef) {
+    @GetMapping("/search/by-name")
+    ResponseEntity<List<BeerOrderDto>> searchBeerOrdersByCustomerName(@RequestParam String customerName) {
         return new ResponseEntity<>(
-                beerOrderService.findBeerOrdersByCustomerRef(customerRef),
+                beerOrderService.findBeerOrdersByCustomerName(customerName),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * Get all beer orders for a specific customer.
+     *
+     * @param customerId the ID of the customer
+     * @return list of beer orders for the specified customer
+     */
+    @GetMapping("/search/by-customer")
+    ResponseEntity<List<BeerOrderDto>> getBeerOrdersByCustomerId(@RequestParam Integer customerId) {
+        return new ResponseEntity<>(
+                beerOrderService.findBeerOrdersByCustomerId(customerId),
                 HttpStatus.OK
         );
     }

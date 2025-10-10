@@ -3,6 +3,7 @@ package cz.ivosahlik.juniemvcaipresentation.controllers;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerOrderDto;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerOrderLineDto;
+import cz.ivosahlik.juniemvcaipresentation.models.CustomerDto;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerOrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,18 @@ class BeerOrderControllerTest {
                 .build();
     }
 
+    private CustomerDto sampleCustomerDto() {
+        return CustomerDto.builder()
+                .id(1)
+                .name("Test Customer")
+                .email("test@example.com")
+                .addressLine1("123 Test Street")
+                .city("Test City")
+                .state("TS")
+                .postalCode("12345")
+                .build();
+    }
+
     private BeerOrderLineDto sampleOrderLineDto() {
         return BeerOrderLineDto.builder()
                 .id(1)
@@ -62,7 +75,7 @@ class BeerOrderControllerTest {
 
     private BeerOrderDto sampleBeerOrderDtoNoId() {
         return BeerOrderDto.builder()
-                .customerRef("CUSTOMER-123")
+                .customer(sampleCustomerDto())
                 .status("NEW")
                 .paymentAmount(new BigDecimal("29.95"))
                 .beerOrderLines(Collections.singletonList(sampleOrderLineDto()))
@@ -89,7 +102,7 @@ class BeerOrderControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.customerRef", is("CUSTOMER-123")))
+                .andExpect(jsonPath("$.customer.name", is("Test Customer")))
                 .andExpect(jsonPath("$.beerOrderLines", hasSize(1)))
                 .andExpect(jsonPath("$.beerOrderLines[0].beer.beerName", is("Sample Beer")));
     }
@@ -104,7 +117,7 @@ class BeerOrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(2)))
-                .andExpect(jsonPath("$.customerRef", is("CUSTOMER-123")));
+                .andExpect(jsonPath("$.customer.name", is("Test Customer")));
     }
 
     @Test
@@ -134,13 +147,13 @@ class BeerOrderControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/beer-orders/search finds orders by customer reference")
-    void testSearchBeerOrders() throws Exception {
+    @DisplayName("GET /api/v1/beer-orders/search/by-name finds orders by customer name")
+    void testSearchBeerOrdersByCustomerName() throws Exception {
         List<BeerOrderDto> orders = Collections.singletonList(sampleBeerOrderDtoWithId(3));
-        given(beerOrderService.findBeerOrdersByCustomerRef(eq("CUSTOMER"))).willReturn(orders);
+        given(beerOrderService.findBeerOrdersByCustomerName(eq("Test"))).willReturn(orders);
 
-        mockMvc.perform(get("/api/v1/beer-orders/search")
-                        .param("customerRef", "CUSTOMER"))
+        mockMvc.perform(get("/api/v1/beer-orders/search/by-name")
+                        .param("customerName", "Test"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -152,7 +165,19 @@ class BeerOrderControllerTest {
     void testUpdateBeerOrderSuccess() throws Exception {
         BeerOrderDto request = sampleBeerOrderDtoWithId(5); // Use the same ID as in the path parameter
         BeerOrderDto updated = sampleBeerOrderDtoWithId(5);
-        updated.setCustomerRef("UPDATED-CUSTOMER");
+
+        // Create an updated customer
+        CustomerDto updatedCustomer = CustomerDto.builder()
+                .id(2)
+                .name("Updated Customer")
+                .email("updated@example.com")
+                .addressLine1("456 Update Street")
+                .city("Update City")
+                .state("US")
+                .postalCode("54321")
+                .build();
+
+        updated.setCustomer(updatedCustomer);
         updated.setStatus("PROCESSING");
 
         given(beerOrderService.updateBeerOrder(eq(5), any(BeerOrderDto.class))).willReturn(Optional.of(updated));
@@ -163,7 +188,7 @@ class BeerOrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(5)))
-                .andExpect(jsonPath("$.customerRef", is("UPDATED-CUSTOMER")))
+                .andExpect(jsonPath("$.customer.name", is("Updated Customer")))
                 .andExpect(jsonPath("$.status", is("PROCESSING")));
     }
 
@@ -202,7 +227,7 @@ class BeerOrderControllerTest {
     void testCreateBeerOrderValidationFailure() throws Exception {
         // Create an invalid request with missing required fields
         BeerOrderDto invalidRequest = new BeerOrderDto();
-        // Missing customerRef which is required
+        // Missing customer which is required
 
         mockMvc.perform(post("/api/v1/beer-orders")
                         .contentType(MediaType.APPLICATION_JSON)
