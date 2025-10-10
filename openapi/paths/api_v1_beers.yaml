@@ -1,0 +1,77 @@
+get:
+  tags:
+    - Beer
+  summary: List all beers
+  operationId: listBeers
+  description: Retrieves a list of all beers in the system
+  responses:
+    '200':
+      description: List of beers successfully retrieved
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/schemas/BeerDto.yaml'
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"
+    '403':
+      description: Forbidden - Not enough permissions to access the resource
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Access denied"
+
+post:
+  tags:
+    - Beer
+  summary: Create a new beer
+  operationId: createBeer
+  description: Creates a new beer with the provided details
+  requestBody:
+    description: Beer object to be created
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/BeerDto.yaml'
+  responses:
+    '201':
+      description: Beer successfully created
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/BeerDto.yaml'
+    '400':
+      description: Invalid request body - validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Validation failed"
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: "beerName"
+                    message:
+                      type: string
+                      example: "must not be blank"

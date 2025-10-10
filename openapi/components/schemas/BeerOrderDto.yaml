@@ -1,0 +1,55 @@
+type: object
+description: Data Transfer Object for beer order information
+required:
+  - customerRef
+properties:
+  id:
+    type: integer
+    format: int32
+    description: Unique identifier for the beer order
+    readOnly: true
+    example: 123
+  version:
+    type: integer
+    format: int32
+    description: Version number for optimistic locking
+    readOnly: true
+    example: 1
+  customerRef:
+    type: string
+    maxLength: 255
+    description: Reference identifier for the customer
+    example: "CUS-123456"
+  paymentAmount:
+    type: number
+    format: decimal
+    description: Total payment amount for this order
+    example: 123.45
+  status:
+    type: string
+    description: Current status of the beer order
+    example: "PENDING"
+  beerOrderLines:
+    type: array
+    description: List of beer order line items
+    items:
+      $ref: './BeerOrderLineDto.yaml'
+    default: []
+    example:
+      - id: 1
+        orderQuantity: 24
+        beer:
+          id: 42
+          beerName: "Hoppy IPA"
+  createdDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer order was created
+    readOnly: true
+    example: "2025-10-09T14:30:00Z"
+  updateDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer order was last updated
+    readOnly: true
+    example: "2025-10-10T09:15:00Z"

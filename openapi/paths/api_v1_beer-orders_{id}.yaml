@@ -1,0 +1,90 @@
+parameters:
+  - name: id
+    in: path
+    description: Unique identifier of the beer order
+    required: true
+    schema:
+      type: integer
+      format: int32
+      minimum: 1
+      example: 42
+
+get:
+  tags:
+    - Beer Orders
+  summary: Get beer order by ID
+  operationId: getBeerOrderById
+  description: Retrieves a specific beer order by its unique identifier
+  responses:
+    '200':
+      description: Beer order successfully retrieved
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/BeerOrderDto.yaml'
+    '404':
+      description: Beer order with the specified ID not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Beer order not found"
+
+put:
+  tags:
+    - Beer Orders
+  summary: Update an existing beer order
+  operationId: updateBeerOrder
+  description: Updates an existing beer order with the provided details
+  requestBody:
+    description: Updated beer order object
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/BeerOrderDto.yaml'
+  responses:
+    '200':
+      description: Beer order successfully updated
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/BeerOrderDto.yaml'
+    '400':
+      description: Invalid request body - validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Validation failed"
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: "customerRef"
+                    message:
+                      type: string
+                      example: "must not be blank"
+    '404':
+      description: Beer order with the specified ID not found
+
+delete:
+  tags:
+    - Beer Orders
+  summary: Delete a beer order
+  operationId: deleteBeerOrder
+  description: Deletes a beer order with the specified ID
+  responses:
+    '204':
+      description: Beer order successfully deleted
+    '404':
+      description: Beer order with the specified ID not found

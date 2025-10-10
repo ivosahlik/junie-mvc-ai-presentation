@@ -1,0 +1,34 @@
+get:
+  tags:
+    - Beer Orders
+  summary: Get beer orders by customer ID
+  operationId: getBeerOrdersByCustomerId
+  description: Get all beer orders for a specific customer
+  parameters:
+    - name: customerId
+      in: query
+      description: ID of the customer
+      required: true
+      schema:
+        type: integer
+        format: int32
+        example: 1
+  responses:
+    '200':
+      description: List of beer orders for the specified customer
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/schemas/BeerOrderDto.yaml'
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"

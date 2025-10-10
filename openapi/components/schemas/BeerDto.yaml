@@ -1,0 +1,60 @@
+type: object
+description: Represents a beer product in the system
+required:
+  - beerName
+  - beerStyle
+  - upc
+  - quantityOnHand
+  - price
+properties:
+  id:
+    type: integer
+    format: int32
+    description: Unique identifier for the beer
+    readOnly: true
+    example: 123
+  version:
+    type: integer
+    format: int32
+    description: Version number for optimistic locking
+    readOnly: true
+    example: 1
+  beerName:
+    type: string
+    maxLength: 255
+    description: Name of the beer
+    example: "Hoppy IPA"
+  beerStyle:
+    type: string
+    maxLength: 100
+    description: Style or category of the beer
+    example: "India Pale Ale"
+  upc:
+    type: string
+    maxLength: 50
+    description: Universal Product Code - unique product identifier
+    example: "0631234200036"
+  quantityOnHand:
+    type: integer
+    format: int32
+    minimum: 0
+    description: Current inventory quantity available
+    example: 150
+  price:
+    type: number
+    format: decimal
+    minimum: 0.00
+    description: Price per unit in the default currency
+    example: 12.99
+  createdDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer was created
+    readOnly: true
+    example: "2025-10-09T14:30:00Z"
+  updateDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer was last updated
+    readOnly: true
+    example: "2025-10-10T09:15:00Z"
