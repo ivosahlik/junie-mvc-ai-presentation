@@ -1,0 +1,48 @@
+type: object
+description: Data Transfer Object for beer order line information
+required:
+  - orderQuantity
+  - beer
+properties:
+  id:
+    type: integer
+    format: int32
+    description: Unique identifier for the beer order line
+    readOnly: true
+    example: 45
+  version:
+    type: integer
+    format: int32
+    description: Version number for optimistic locking
+    readOnly: true
+    example: 1
+  orderQuantity:
+    type: integer
+    format: int32
+    minimum: 1
+    description: Quantity of beer ordered
+    example: 24
+  quantityAllocated:
+    type: integer
+    format: int32
+    description: Quantity allocated from inventory
+    example: 12
+  status:
+    type: string
+    description: Current status of the beer order line
+    example: "ALLOCATED"
+  beer:
+    $ref: './BeerDto.yaml'
+    description: The beer being ordered
+  createdDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer order line was created
+    readOnly: true
+    example: "2025-10-09T14:30:00Z"
+  updateDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer order line was last updated
+    readOnly: true
+    example: "2025-10-10T09:15:00Z"

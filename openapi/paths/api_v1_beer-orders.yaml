@@ -1,0 +1,67 @@
+get:
+  tags:
+    - Beer Orders
+  summary: List all beer orders
+  operationId: listBeerOrders
+  description: Retrieves a list of all beer orders in the system
+  responses:
+    '200':
+      description: List of beer orders successfully retrieved
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/schemas/BeerOrderDto.yaml'
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"
+
+post:
+  tags:
+    - Beer Orders
+  summary: Create a new beer order
+  operationId: createBeerOrder
+  description: Creates a new beer order with the provided details
+  requestBody:
+    description: Beer order object to be created
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/BeerOrderDto.yaml'
+  responses:
+    '201':
+      description: Beer order successfully created
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/BeerOrderDto.yaml'
+    '400':
+      description: Invalid request body - validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Validation failed"
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: "customerRef"
+                    message:
+                      type: string
+                      example: "must not be blank"

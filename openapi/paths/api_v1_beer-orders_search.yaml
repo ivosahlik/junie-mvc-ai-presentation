@@ -1,0 +1,33 @@
+get:
+  tags:
+    - Beer Orders
+  summary: Search beer orders by customer reference
+  operationId: searchBeerOrders
+  description: Search for beer orders by customer reference
+  parameters:
+    - name: customerRef
+      in: query
+      description: Customer reference to search for
+      required: true
+      schema:
+        type: string
+        example: "CUS-123456"
+  responses:
+    '200':
+      description: List of matching beer orders
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/schemas/BeerOrderDto.yaml'
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"

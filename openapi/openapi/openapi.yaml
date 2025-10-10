@@ -44,6 +44,10 @@ externalDocs:
   description: "Find out how to create a GitHub repo for your OpenAPI definition."
   url: 'https://github.com/Redocly/create-openapi-repo'
 tags:
+  - name: Beer
+    description: Operations for managing beer products
+  - name: Beer Orders
+    description: Operations for managing beer orders
 
 servers:
   - url: https://{tenant}/api/v1
@@ -53,5 +57,24 @@ servers:
         description: Your tenant id
   - url: https://example.com/api/v1
 paths:
+  '/api/v1/beers':
+    $ref: '../paths/api_v1_beers.yaml'
+  '/api/v1/beers/{id}':
+    $ref: '../paths/api_v1_beers_{id}.yaml'
+  '/api/v1/beer-orders':
+    $ref: '../paths/api_v1_beer-orders.yaml'
+  '/api/v1/beer-orders/{id}':
+    $ref: '../paths/api_v1_beer-orders_{id}.yaml'
+  '/api/v1/beer-orders/search':
+    $ref: '../paths/api_v1_beer-orders_search.yaml'
 
-webhooks:
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Authentication token
