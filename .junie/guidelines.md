@@ -194,3 +194,47 @@ logger.atDebug()
 * **Convention-based locations:** By default, Spring Boot auto-configures Flyway to look for migration scripts in `src/main/resources/db/migration`, though this can be customized via `spring.flyway.locations` property.
 * **Versioning scheme:** The standard naming pattern uses a version prefix (`V`) followed by version number, double underscore separator, and a description with underscores replacing spaces. This ensures migrations execute in the correct sequence.
 * **Database independence:** Migrations work across different database vendors while maintaining the same version history, supporting seamless deployment across environments.
+
+## 16. OpenAPI Specification Documentation
+* Use the OpenAPI Specification (OAS) to document and standardize your REST APIs.
+* Organize the API documentation using a modular file structure with separate files for paths, schemas, and other components.
+* Use file references (`$ref`) to maintain a clean, maintainable, and reusable API documentation.
+
+**Explanation:**
+
+### API Documentation Structure
+* The main entry point for the API documentation is the `openapi.yaml` file located in the `openapi/openapi` directory.
+* This file contains the basic API information including version, title, contact information, license details, and a general description.
+* The detailed API elements are organized in separate files and referenced from the main file.
+
+### File Naming Conventions
+* **Path Operations:** Path operation files are named based on the API path, with slashes (`/`) replaced by underscores (`_`) and path parameters enclosed in curly braces. For example:
+  * `/customers/{id}` path is defined in a file named `customers_{id}.yaml`
+  * Files are stored in the `openapi/paths` directory
+
+* **Schema Definitions:** Schema files are stored in the `openapi/components/schemas` directory with names reflecting the model they represent, for example:
+  * `Customer.yaml` for a customer schema
+  * `ResourceId.yaml` for a common resource ID schema
+
+* **Other Components:** Additional components such as headers, parameters, responses, etc. are stored in their respective directories under `openapi/components/`:
+  * Headers: `components/headers/`
+  * Parameters: `components/parameters/`
+  * Responses: `components/responses/`
+  * Request Bodies: `components/requestBodies/`
+
+### Using File References
+* Components are referenced using the `$ref` syntax with relative paths to maintain modularity and reusability:
+  * Schema reference: `$ref: ../components/schemas/Customer.yaml`
+  * Header reference: `$ref: ../components/headers/Rate-Limit-Limit.yaml`
+  * Parameter reference: `$ref: ../components/parameters/collectionLimit.yaml`
+  * Response reference: `$ref: ../components/responses/AccessForbidden.yaml`
+
+### Testing the OpenAPI Specification
+* To validate the OpenAPI definition, navigate to the `openapi` directory and run `npm test`
+* This command runs `redocly lint` which checks the specification for:
+  * Syntax errors
+  * Semantic errors
+  * Best practices violations
+  * Consistency issues
+* Before submitting API changes, always run this test to ensure the API documentation is valid and follows standards.
+* To preview the documentation, run `npm start` which starts a local server to view the API documentation.
