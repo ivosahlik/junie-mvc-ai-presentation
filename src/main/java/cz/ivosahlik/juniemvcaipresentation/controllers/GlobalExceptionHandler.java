@@ -14,6 +14,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Global exception handler for consistent error responses across the API.
@@ -26,13 +27,13 @@ class GlobalExceptionHandler {
      * Handle resource not found exceptions.
      */
     @ExceptionHandler(RuntimeException.class)
-    ProblemDetail handleResourceNotFound(RuntimeException ex) {
+    ProblemDetail handleResourceNotFound(RuntimeException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.NOT_FOUND,
                 ex.getMessage()
         );
 
-        addCommonProps(problemDetail, "Resource Not Found");
+        addCommonProps(problemDetail, "Resource Not Found", request);
         return problemDetail;
     }
 
@@ -40,7 +41,7 @@ class GlobalExceptionHandler {
      * Handle validation errors from @Valid annotations.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ProblemDetail handleValidationErrors(MethodArgumentNotValidException ex) {
+    ProblemDetail handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 
         Map<String, String> validationErrors = new HashMap<>();
@@ -51,7 +52,7 @@ class GlobalExceptionHandler {
         });
 
         problemDetail.setProperty("validationErrors", validationErrors);
-        addCommonProps(problemDetail, "Validation Error");
+        addCommonProps(problemDetail, "Validation Error", request);
         return problemDetail;
     }
 
@@ -59,7 +60,7 @@ class GlobalExceptionHandler {
      * Handle constraint violation errors.
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    ProblemDetail handleConstraintViolation(ConstraintViolationException ex) {
+    ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 
         Map<String, String> validationErrors = new HashMap<>();
@@ -70,7 +71,7 @@ class GlobalExceptionHandler {
         });
 
         problemDetail.setProperty("validationErrors", validationErrors);
-        addCommonProps(problemDetail, "Constraint Violation");
+        addCommonProps(problemDetail, "Constraint Violation", request);
         return problemDetail;
     }
 
@@ -78,13 +79,13 @@ class GlobalExceptionHandler {
      * Handle optimistic locking failures.
      */
     @ExceptionHandler(OptimisticLockingFailureException.class)
-    ProblemDetail handleOptimisticLocking(OptimisticLockingFailureException ex) {
+    ProblemDetail handleOptimisticLocking(OptimisticLockingFailureException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.CONFLICT,
                 "The resource was updated by another user. Please try again with the latest version."
         );
 
-        addCommonProps(problemDetail, "Concurrent Modification");
+        addCommonProps(problemDetail, "Concurrent Modification", request);
         return problemDetail;
     }
 
@@ -92,13 +93,13 @@ class GlobalExceptionHandler {
      * Handle data integrity violations (e.g., unique constraints).
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.CONFLICT,
                 "Data integrity violation: " + ex.getMessage()
         );
 
-        addCommonProps(problemDetail, "Data Integrity Violation");
+        addCommonProps(problemDetail, "Data Integrity Violation", request);
         return problemDetail;
     }
 
@@ -106,22 +107,24 @@ class GlobalExceptionHandler {
      * Handle general server errors.
      */
     @ExceptionHandler(Exception.class)
-    ProblemDetail handleGeneralError(Exception ex) {
+    ProblemDetail handleGeneralError(Exception ex, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected error occurred: " + ex.getMessage()
         );
 
-        addCommonProps(problemDetail, "Server Error");
+        addCommonProps(problemDetail, "Server Error", request);
         return problemDetail;
     }
 
     /**
      * Add common properties to all problem details.
      */
-    private void addCommonProps(ProblemDetail problemDetail, String title) {
+    private void addCommonProps(ProblemDetail problemDetail, String title, HttpServletRequest request) {
         problemDetail.setTitle(title);
-        problemDetail.setType(URI.create("https://api.beerorderservice.com/errors/" + title.toLowerCase().replace(" ", "-")));
+        problemDetail.setType(
+                URI.create(request.getRequestURL().toString()));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("path", request.getRequestURI());
     }
 }
