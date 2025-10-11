@@ -57,6 +57,14 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<BeerDto> listBeers(String beerName, String beerStyle, Pageable pageable) {
+        // Use the custom repository method that handles all filter combinations
+        return beerRepository.findAllByBeerNameAndBeerStyle(beerName, beerStyle, pageable)
+                .map(beerMapper::toDto);
+    }
+
+    @Override
     @Transactional
     public Optional<BeerDto> updateBeer(Integer id, BeerDto beerDto) {
         return beerRepository.findById(id).map(existing -> {

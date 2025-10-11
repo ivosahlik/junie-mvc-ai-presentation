@@ -16,19 +16,31 @@ public interface BeerService {
     /**
      * List all beers with optional filtering
      * @return List of all beers
-     * @deprecated Use {@link #listBeers(String, Pageable)} instead
+     * @deprecated Use {@link #listBeers(String, String, Pageable)} instead
      */
     @Deprecated
     List<BeerDto> listBeers();
 
     /**
-     * List beers with pagination and optional filtering
+     * List beers with pagination and optional filtering by name
      *
      * @param beerName Optional beer name filter (can be null)
      * @param pageable Pagination information
      * @return Page of beers matching the criteria
+     * @deprecated Use {@link #listBeers(String, String, Pageable)} instead
      */
+    @Deprecated
     Page<BeerDto> listBeers(String beerName, Pageable pageable);
+
+    /**
+     * List beers with pagination and optional filtering by name and style
+     *
+     * @param beerName Optional beer name filter (can be null)
+     * @param beerStyle Optional beer style filter (can be null)
+     * @param pageable Pagination information
+     * @return Page of beers matching the criteria
+     */
+    Page<BeerDto> listBeers(String beerName, String beerStyle, Pageable pageable);
 
     Optional<BeerDto> updateBeer(Integer id, BeerDto beer);
 

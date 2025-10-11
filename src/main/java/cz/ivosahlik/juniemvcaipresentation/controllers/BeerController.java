@@ -40,9 +40,9 @@ class BeerController {
     }
 
     /**
-     * @deprecated Use {@link #listBeersWithPagination(String, Integer, Integer, String, String)} instead
+     * @deprecated Use {@link #listBeersWithPagination(String, String, Integer, Integer, String, String)} instead
      */
-    @GetMapping(params = "!beerName")
+    @GetMapping(params = {"!beerName", "!beerStyle", "!page", "!size", "!sortField", "!direction"})
     @Deprecated
     public ResponseEntity<List<BeerDto>> listBeers() {
         return ResponseEntity.ok(beerService.listBeers());
@@ -50,7 +50,7 @@ class BeerController {
 
     @Operation(
         summary = "List beers with optional filtering",
-        description = "Retrieves a page of beers with optional filtering by beer name",
+        description = "Retrieves a page of beers with optional filtering by beer name and beer style",
         responses = {
             @ApiResponse(
                 responseCode = "200",
@@ -64,6 +64,8 @@ class BeerController {
     public ResponseEntity<Page<BeerDto>> listBeersWithPagination(
             @Parameter(description = "Beer name to filter by (optional)")
             @RequestParam(required = false) String beerName,
+            @Parameter(description = "Beer style to filter by (optional)")
+            @RequestParam(required = false) String beerStyle,
             @Parameter(description = "Page number (0-based)")
             @RequestParam(defaultValue = "0") Integer page,
             @Parameter(description = "Page size")
@@ -78,7 +80,7 @@ class BeerController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortField));
 
-        return ResponseEntity.ok(beerService.listBeers(beerName, pageable));
+        return ResponseEntity.ok(beerService.listBeers(beerName, beerStyle, pageable));
     }
 
     @PutMapping("/{id}")

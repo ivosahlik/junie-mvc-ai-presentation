@@ -113,7 +113,7 @@ class BeerServiceImplTest {
         BeerDto beer3 = createTestBeer("Test Ale", "Ale");
 
         // Test filtering by "Test" in the name
-        Page<BeerDto> filteredPage = beerService.listBeers("Test",
+        Page<BeerDto> filteredPage = beerService.listBeers("Test", null,
                 PageRequest.of(0, 10));
 
         // Verify filtering works
@@ -123,7 +123,57 @@ class BeerServiceImplTest {
         );
 
         // Test with a specific non-matching name
-        Page<BeerDto> emptyResult = beerService.listBeers("NonExistentBeerName",
+        Page<BeerDto> emptyResult = beerService.listBeers("NonExistentBeerName", null,
+                PageRequest.of(0, 10));
+        assertThat(emptyResult.getTotalElements()).isEqualTo(0);
+        assertThat(emptyResult.getContent()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Filtered list of beers by beer style")
+    void testListBeersWithStyleFilter() {
+        // Create beers with specific styles to test filtering
+        BeerDto beer1 = createTestBeer("First IPA", "IPA");
+        BeerDto beer2 = createTestBeer("Second IPA", "IPA");
+        BeerDto beer3 = createTestBeer("Style Test Beer", "Stout");
+
+        // Test filtering by "IPA" style
+        Page<BeerDto> filteredPage = beerService.listBeers(null, "IPA",
+                PageRequest.of(0, 10));
+
+        // Verify filtering works
+        assertThat(filteredPage.getTotalElements()).isGreaterThanOrEqualTo(2);
+        filteredPage.getContent().forEach(beer ->
+            assertThat(beer.getBeerStyle()).isEqualTo("IPA")
+        );
+
+        // Test with a specific non-matching style
+        Page<BeerDto> emptyResult = beerService.listBeers(null, "NonExistentStyle",
+                PageRequest.of(0, 10));
+        assertThat(emptyResult.getTotalElements()).isEqualTo(0);
+        assertThat(emptyResult.getContent()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Filtered list of beers by both name and style")
+    void testListBeersWithNameAndStyleFilters() {
+        // Create beers with various names and styles for testing
+        BeerDto beer1 = createTestBeer("Special IPA", "IPA");
+        BeerDto beer2 = createTestBeer("Regular Lager", "Lager");
+        BeerDto beer3 = createTestBeer("Special Stout", "Stout");
+        BeerDto beer4 = createTestBeer("Another IPA", "IPA");
+
+        // Test filtering by both name and style
+        Page<BeerDto> filteredPage = beerService.listBeers("Special", "IPA",
+                PageRequest.of(0, 10));
+
+        // Verify filtering works (should only return "Special IPA")
+        assertThat(filteredPage.getTotalElements()).isEqualTo(1);
+        assertThat(filteredPage.getContent().get(0).getBeerName()).isEqualTo("Special IPA");
+        assertThat(filteredPage.getContent().get(0).getBeerStyle()).isEqualTo("IPA");
+
+        // Test with matching style but non-matching name
+        Page<BeerDto> emptyResult = beerService.listBeers("NonExistent", "IPA",
                 PageRequest.of(0, 10));
         assertThat(emptyResult.getTotalElements()).isEqualTo(0);
         assertThat(emptyResult.getContent()).isEmpty();

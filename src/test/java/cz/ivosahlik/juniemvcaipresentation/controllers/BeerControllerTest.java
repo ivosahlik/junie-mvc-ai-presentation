@@ -172,17 +172,16 @@ class BeerControllerTest {
         Page<BeerDto> beerPage = new PageImpl<>(beers,
                 PageRequest.of(0, 10, Sort.by("beerName").ascending()), 3);
 
-        // Mock the service method
-        given(beerService.listBeers(eq(null), any(Pageable.class))).willReturn(beerPage);
+        // Mock the service method with both beerName and beerStyle parameters
+        given(beerService.listBeers(eq(null), eq(null), any(Pageable.class))).willReturn(beerPage);
 
         // Perform the request and verify response
-        // Add a null beerName parameter to ensure it routes to the pagination endpoint
         mockMvc.perform(get("/api/v1/beers")
                         .param("page", "0")
                         .param("size", "10")
                         .param("sortField", "beerName")
                         .param("direction", "asc")
-                        .param("beerName", (String)null))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content", hasSize(3)))
@@ -215,11 +214,12 @@ class BeerControllerTest {
                 1);
 
         // Mock the service method for the filter
-        given(beerService.listBeers(eq("IPA"), any(Pageable.class))).willReturn(filteredPage);
+        given(beerService.listBeers(eq("IPA"), eq(null), any(Pageable.class))).willReturn(filteredPage);
 
         // Perform the request with filter and verify response
         mockMvc.perform(get("/api/v1/beers")
-                        .param("beerName", "IPA"))
+                        .param("beerName", "IPA")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content", hasSize(1)))
@@ -238,7 +238,7 @@ class BeerControllerTest {
                 0);
 
         // Mock the service method for non-matching filter
-        given(beerService.listBeers(eq("NonExistent"), any(Pageable.class))).willReturn(emptyPage);
+        given(beerService.listBeers(eq("NonExistent"), eq(null), any(Pageable.class))).willReturn(emptyPage);
 
         // Perform the request with filter and verify empty response
         mockMvc.perform(get("/api/v1/beers")
@@ -247,5 +247,75 @@ class BeerControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content", hasSize(0)))
                 .andExpect(jsonPath("$.totalElements", is(0)));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/beers with beerStyle filter returns filtered results")
+    void testListBeersWithBeerStyleFilter() throws Exception {
+        // Create sample beer with specific style for testing
+        BeerDto targetBeer = BeerDto.builder()
+                .id(6)
+                .beerName("Style Test Beer")
+                .beerStyle("Porter")
+                .upc("1122334455")
+                .quantityOnHand(20)
+                .price(new BigDecimal("6.99"))
+                .build();
+
+        // Create a Page containing only the filtered beer
+        Page<BeerDto> filteredPage = new PageImpl<>(
+                List.of(targetBeer),
+                PageRequest.of(0, 25, Sort.by("beerName").ascending()),
+                1);
+
+        // Mock the service method for the style filter
+        given(beerService.listBeers(eq(null), eq("Porter"), any(Pageable.class))).willReturn(filteredPage);
+
+        // Perform the request with filter and verify response
+        mockMvc.perform(get("/api/v1/beers")
+                        .param("beerStyle", "Porter")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(6)))
+                .andExpect(jsonPath("$.content[0].beerStyle", is("Porter")))
+                .andExpect(jsonPath("$.totalElements", is(1)));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/beers with both beerName and beerStyle filters returns filtered results")
+    void testListBeersWithBeerNameAndBeerStyleFilters() throws Exception {
+        // Create sample beer with specific name and style for testing
+        BeerDto targetBeer = BeerDto.builder()
+                .id(7)
+                .beerName("Combo IPA")
+                .beerStyle("IPA")
+                .upc("9988776655")
+                .quantityOnHand(25)
+                .price(new BigDecimal("7.99"))
+                .build();
+
+        // Create a Page containing only the filtered beer
+        Page<BeerDto> filteredPage = new PageImpl<>(
+                List.of(targetBeer),
+                PageRequest.of(0, 25, Sort.by("beerName").ascending()),
+                1);
+
+        // Mock the service method for both filters
+        given(beerService.listBeers(eq("Combo"), eq("IPA"), any(Pageable.class))).willReturn(filteredPage);
+
+        // Perform the request with both filters and verify response
+        mockMvc.perform(get("/api/v1/beers")
+                        .param("beerName", "Combo")
+                        .param("beerStyle", "IPA")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(7)))
+                .andExpect(jsonPath("$.content[0].beerName", is("Combo IPA")))
+                .andExpect(jsonPath("$.content[0].beerStyle", is("IPA")))
+                .andExpect(jsonPath("$.totalElements", is(1)));
     }
 }

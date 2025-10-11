@@ -94,29 +94,7 @@ class BeerRepositoryTest {
     @DisplayName("findAllByBeerNameContainingIgnoreCase should filter by name with pagination")
     void testFindAllByBeerNameContainingIgnoreCase() {
         // Save beers with different names for testing
-        beerRepository.save(Beer.builder()
-                .beerName("Alpha IPA")
-                .beerStyle("IPA")
-                .upc("111-222-333")
-                .quantityOnHand(10)
-                .price(new BigDecimal("4.99"))
-                .build());
-
-        beerRepository.save(Beer.builder()
-                .beerName("Beta Lager")
-                .beerStyle("Lager")
-                .upc("222-333-444")
-                .quantityOnHand(15)
-                .price(new BigDecimal("3.99"))
-                .build());
-
-        beerRepository.save(Beer.builder()
-                .beerName("Alpha Ale")
-                .beerStyle("Ale")
-                .upc("333-444-555")
-                .quantityOnHand(20)
-                .price(new BigDecimal("5.99"))
-                .build());
+        createTestBeers();
 
         // Test filtering by "alpha" (should match 2 beers)
         Page<Beer> alphaBeers = beerRepository.findAllByBeerNameContainingIgnoreCase("alpha",
@@ -150,5 +128,121 @@ class BeerRepositoryTest {
         assertThat(pagedResult.getContent()).hasSize(2);
         assertThat(pagedResult.getTotalElements()).isGreaterThanOrEqualTo(3);
         assertThat(pagedResult.getTotalPages()).isGreaterThanOrEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("findAllByBeerStyleContainingIgnoreCase should filter by style with pagination")
+    void testFindAllByBeerStyleContainingIgnoreCase() {
+        // Save beers with different styles for testing
+        createTestBeers();
+
+        // Test filtering by "IPA" style (should match 1 beer)
+        Page<Beer> ipaBeers = beerRepository.findAllByBeerStyleContainingIgnoreCase("ipa",
+                PageRequest.of(0, 10, Sort.by("beerName")));
+
+        assertThat(ipaBeers.getContent()).hasSize(1);
+        assertThat(ipaBeers.getTotalElements()).isEqualTo(1);
+        ipaBeers.getContent().forEach(beer ->
+            assertThat(beer.getBeerStyle().toLowerCase()).contains("ipa")
+        );
+
+        // Test filtering by "ale" style (should match 1 beer)
+        Page<Beer> aleBeers = beerRepository.findAllByBeerStyleContainingIgnoreCase("ale",
+                PageRequest.of(0, 10));
+
+        assertThat(aleBeers.getContent()).hasSize(1);
+        assertThat(aleBeers.getTotalElements()).isEqualTo(1);
+        assertThat(aleBeers.getContent().get(0).getBeerStyle()).isEqualTo("Ale");
+
+        // Test filtering with non-existent style
+        Page<Beer> nonExistentBeers = beerRepository.findAllByBeerStyleContainingIgnoreCase("NonExistentStyle",
+                PageRequest.of(0, 10));
+
+        assertThat(nonExistentBeers.getContent()).isEmpty();
+        assertThat(nonExistentBeers.getTotalElements()).isZero();
+    }
+
+    @Test
+    @DisplayName("findAllByBeerNameAndBeerStyle should filter by name and style with all combinations")
+    void testFindAllByBeerNameAndBeerStyle() {
+        // Save beers with different names and styles for testing
+        createTestBeers();
+
+        // Add another IPA for testing multiple style matches
+        beerRepository.save(Beer.builder()
+                .beerName("Gamma IPA")
+                .beerStyle("IPA")
+                .upc("444-555-666")
+                .quantityOnHand(30)
+                .price(new BigDecimal("6.99"))
+                .build());
+
+        // Test filtering by both name and style
+        Page<Beer> nameAndStyleBeers = beerRepository.findAllByBeerNameAndBeerStyle("alpha", "ipa",
+                PageRequest.of(0, 10));
+
+        assertThat(nameAndStyleBeers.getContent()).hasSize(1);
+        assertThat(nameAndStyleBeers.getTotalElements()).isEqualTo(1);
+        assertThat(nameAndStyleBeers.getContent().get(0).getBeerName()).isEqualTo("Alpha IPA");
+        assertThat(nameAndStyleBeers.getContent().get(0).getBeerStyle()).isEqualTo("IPA");
+
+        // Test filtering by name only
+        Page<Beer> nameOnlyBeers = beerRepository.findAllByBeerNameAndBeerStyle("alpha", null,
+                PageRequest.of(0, 10));
+
+        assertThat(nameOnlyBeers.getContent()).hasSize(2);
+        nameOnlyBeers.getContent().forEach(beer ->
+            assertThat(beer.getBeerName().toLowerCase()).contains("alpha")
+        );
+
+        // Test filtering by style only
+        Page<Beer> styleOnlyBeers = beerRepository.findAllByBeerNameAndBeerStyle(null, "ipa",
+                PageRequest.of(0, 10));
+
+        assertThat(styleOnlyBeers.getContent()).hasSize(2);
+        styleOnlyBeers.getContent().forEach(beer ->
+            assertThat(beer.getBeerStyle()).isEqualTo("IPA")
+        );
+
+        // Test with no filters (should return all beers)
+        Page<Beer> allBeers = beerRepository.findAllByBeerNameAndBeerStyle(null, null,
+                PageRequest.of(0, 10));
+
+        assertThat(allBeers.getTotalElements()).isGreaterThanOrEqualTo(4);
+
+        // Test with empty string filters (should return all beers)
+        Page<Beer> emptyFilterBeers = beerRepository.findAllByBeerNameAndBeerStyle("", "",
+                PageRequest.of(0, 10));
+
+        assertThat(emptyFilterBeers.getTotalElements()).isGreaterThanOrEqualTo(4);
+    }
+
+    private void createTestBeers() {
+        // Create standard test beers if they don't exist
+        if (beerRepository.count() < 3) {
+            beerRepository.save(Beer.builder()
+                    .beerName("Alpha IPA")
+                    .beerStyle("IPA")
+                    .upc("111-222-333")
+                    .quantityOnHand(10)
+                    .price(new BigDecimal("4.99"))
+                    .build());
+
+            beerRepository.save(Beer.builder()
+                    .beerName("Beta Lager")
+                    .beerStyle("Lager")
+                    .upc("222-333-444")
+                    .quantityOnHand(15)
+                    .price(new BigDecimal("3.99"))
+                    .build());
+
+            beerRepository.save(Beer.builder()
+                    .beerName("Alpha Ale")
+                    .beerStyle("Ale")
+                    .upc("333-444-555")
+                    .quantityOnHand(20)
+                    .price(new BigDecimal("5.99"))
+                    .build());
+        }
     }
 }
