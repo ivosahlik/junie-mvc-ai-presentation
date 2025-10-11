@@ -23,7 +23,7 @@ public class Beer extends BaseEntity {
     @Builder
     public Beer(Integer id, Integer version, String beerName, String beerStyle, String upc,
                 Integer quantityOnHand, BigDecimal price, Set<BeerOrderLine> beerOrderLines,
-                LocalDateTime updateDate, LocalDateTime createdDate) {
+                LocalDateTime updateDate, LocalDateTime createdDate, String description) {
         super.setId(id);
         super.setVersion(version);
         this.beerName = beerName;
@@ -34,6 +34,7 @@ public class Beer extends BaseEntity {
         this.beerOrderLines = beerOrderLines != null ? beerOrderLines : new HashSet<>();
         this.createdDate = createdDate;
         this.updateDate = updateDate;
+        this.description = description;
     }
 
     @Column(length = 255)
@@ -49,6 +50,9 @@ public class Beer extends BaseEntity {
 
     @Column(precision = 19, scale = 2)
     private BigDecimal price;
+
+    @Column(length = 1000)
+    private String description;
 
     @OneToMany(mappedBy = "beer")
     @ToString.Exclude

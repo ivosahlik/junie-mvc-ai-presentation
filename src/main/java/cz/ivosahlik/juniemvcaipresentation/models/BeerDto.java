@@ -45,6 +45,9 @@ public class BeerDto {
     @DecimalMin("0.00")
     private BigDecimal price;
 
+    @Size(max = 1000)
+    private String description;
+
     private LocalDateTime createdDate;
 
     private LocalDateTime updateDate;

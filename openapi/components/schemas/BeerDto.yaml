@@ -46,6 +46,11 @@ properties:
     minimum: 0.00
     description: Price per unit in the default currency
     example: 12.99
+  description:
+    type: string
+    maxLength: 1000
+    description: Detailed description of the beer
+    example: "A hoppy IPA with citrus notes and a smooth finish."
   createdDate:
     type: string
     format: date-time
