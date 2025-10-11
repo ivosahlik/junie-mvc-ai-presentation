@@ -8,6 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -91,11 +96,12 @@ class BeerControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/beers returns list of beers")
+    @DisplayName("GET /api/v1/beers returns list of beers (deprecated method)")
     void testListBeers() throws Exception {
         List<BeerDto> list = Arrays.asList(sampleBeerDtoWithId(1), sampleBeerDtoWithId(2));
         given(beerService.listBeers()).willReturn(list);
 
+        // The @GetMapping(params = "!beerName") should match when beerName parameter is absent
         mockMvc.perform(get("/api/v1/beers"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -150,5 +156,96 @@ class BeerControllerTest {
 
         mockMvc.perform(delete("/api/v1/beers/888"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/beers with pagination parameters returns paginated results")
+    void testListBeersWithPagination() throws Exception {
+        // Create sample data
+        List<BeerDto> beers = Arrays.asList(
+                sampleBeerDtoWithId(1),
+                sampleBeerDtoWithId(2),
+                sampleBeerDtoWithId(3)
+        );
+
+        // Create a Page object with the sample data
+        Page<BeerDto> beerPage = new PageImpl<>(beers,
+                PageRequest.of(0, 10, Sort.by("beerName").ascending()), 3);
+
+        // Mock the service method
+        given(beerService.listBeers(eq(null), any(Pageable.class))).willReturn(beerPage);
+
+        // Perform the request and verify response
+        // Add a null beerName parameter to ensure it routes to the pagination endpoint
+        mockMvc.perform(get("/api/v1/beers")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortField", "beerName")
+                        .param("direction", "asc")
+                        .param("beerName", (String)null))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(3)))
+                .andExpect(jsonPath("$.content[0].id", is(1)))
+                .andExpect(jsonPath("$.content[1].id", is(2)))
+                .andExpect(jsonPath("$.content[2].id", is(3)))
+                .andExpect(jsonPath("$.totalElements", is(3)))
+                .andExpect(jsonPath("$.totalPages", is(1)))
+                .andExpect(jsonPath("$.size", is(10)))
+                .andExpect(jsonPath("$.number", is(0)));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/beers with beerName filter returns filtered results")
+    void testListBeersWithBeerNameFilter() throws Exception {
+        // Create sample beer with specific name for testing
+        BeerDto targetBeer = BeerDto.builder()
+                .id(5)
+                .beerName("Special IPA")
+                .beerStyle("IPA")
+                .upc("9876543210")
+                .quantityOnHand(15)
+                .price(new BigDecimal("5.99"))
+                .build();
+
+        // Create a Page containing only the filtered beer
+        Page<BeerDto> filteredPage = new PageImpl<>(
+                List.of(targetBeer),
+                PageRequest.of(0, 25, Sort.by("beerName").ascending()),
+                1);
+
+        // Mock the service method for the filter
+        given(beerService.listBeers(eq("IPA"), any(Pageable.class))).willReturn(filteredPage);
+
+        // Perform the request with filter and verify response
+        mockMvc.perform(get("/api/v1/beers")
+                        .param("beerName", "IPA"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(5)))
+                .andExpect(jsonPath("$.content[0].beerName", is("Special IPA")))
+                .andExpect(jsonPath("$.totalElements", is(1)));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/beers with no matching beerName returns empty page")
+    void testListBeersWithNoMatchingFilter() throws Exception {
+        // Create an empty Page
+        Page<BeerDto> emptyPage = new PageImpl<>(
+                List.of(),
+                PageRequest.of(0, 25),
+                0);
+
+        // Mock the service method for non-matching filter
+        given(beerService.listBeers(eq("NonExistent"), any(Pageable.class))).willReturn(emptyPage);
+
+        // Perform the request with filter and verify empty response
+        mockMvc.perform(get("/api/v1/beers")
+                        .param("beerName", "NonExistent"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(0)))
+                .andExpect(jsonPath("$.totalElements", is(0)));
     }
 }

@@ -4,8 +4,11 @@ import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
 import cz.ivosahlik.juniemvcaipresentation.mappers.BeerMapper;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
 import cz.ivosahlik.juniemvcaipresentation.repositories.BeerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +46,14 @@ public class BeerServiceImpl implements BeerService {
         return beerRepository.findAll().stream()
                 .map(beerMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BeerDto> listBeers(String beerName, Pageable pageable) {
+        String searchTerm = StringUtils.hasText(beerName) ? beerName : "";
+        return beerRepository.findAllByBeerNameContainingIgnoreCase(searchTerm, pageable)
+                .map(beerMapper::toDto);
     }
 
     @Override

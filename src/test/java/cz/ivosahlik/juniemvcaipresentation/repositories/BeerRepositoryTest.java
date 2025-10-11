@@ -1,12 +1,17 @@
 package cz.ivosahlik.juniemvcaipresentation.repositories;
 
 import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,5 +88,67 @@ class BeerRepositoryTest {
         Integer id = saved.getId();
         beerRepository.delete(saved);
         assertThat(beerRepository.findById(id)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("findAllByBeerNameContainingIgnoreCase should filter by name with pagination")
+    void testFindAllByBeerNameContainingIgnoreCase() {
+        // Save beers with different names for testing
+        beerRepository.save(Beer.builder()
+                .beerName("Alpha IPA")
+                .beerStyle("IPA")
+                .upc("111-222-333")
+                .quantityOnHand(10)
+                .price(new BigDecimal("4.99"))
+                .build());
+
+        beerRepository.save(Beer.builder()
+                .beerName("Beta Lager")
+                .beerStyle("Lager")
+                .upc("222-333-444")
+                .quantityOnHand(15)
+                .price(new BigDecimal("3.99"))
+                .build());
+
+        beerRepository.save(Beer.builder()
+                .beerName("Alpha Ale")
+                .beerStyle("Ale")
+                .upc("333-444-555")
+                .quantityOnHand(20)
+                .price(new BigDecimal("5.99"))
+                .build());
+
+        // Test filtering by "alpha" (should match 2 beers)
+        Page<Beer> alphaBeers = beerRepository.findAllByBeerNameContainingIgnoreCase("alpha",
+                PageRequest.of(0, 10, Sort.by("beerName")));
+
+        assertThat(alphaBeers.getContent()).hasSize(2);
+        assertThat(alphaBeers.getTotalElements()).isEqualTo(2);
+        alphaBeers.getContent().forEach(beer ->
+            assertThat(beer.getBeerName().toLowerCase()).contains("alpha")
+        );
+
+        // Test filtering by "ipa" (should match 1 beer)
+        Page<Beer> ipaBeers = beerRepository.findAllByBeerNameContainingIgnoreCase("ipa",
+                PageRequest.of(0, 10));
+
+        assertThat(ipaBeers.getContent()).hasSize(1);
+        assertThat(ipaBeers.getTotalElements()).isEqualTo(1);
+        assertThat(ipaBeers.getContent().get(0).getBeerName()).contains("IPA");
+
+        // Test filtering with non-existent name
+        Page<Beer> nonExistentBeers = beerRepository.findAllByBeerNameContainingIgnoreCase("NonExistent",
+                PageRequest.of(0, 10));
+
+        assertThat(nonExistentBeers.getContent()).isEmpty();
+        assertThat(nonExistentBeers.getTotalElements()).isZero();
+
+        // Test pagination
+        Page<Beer> pagedResult = beerRepository.findAllByBeerNameContainingIgnoreCase("",
+                PageRequest.of(0, 2, Sort.by("beerName")));
+
+        assertThat(pagedResult.getContent()).hasSize(2);
+        assertThat(pagedResult.getTotalElements()).isGreaterThanOrEqualTo(3);
+        assertThat(pagedResult.getTotalPages()).isGreaterThanOrEqualTo(2);
     }
 }

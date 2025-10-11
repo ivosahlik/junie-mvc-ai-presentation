@@ -6,6 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -78,5 +81,62 @@ class BeerServiceImplTest {
 
         // delete (not found)
         assertThat(beerService.deleteBeer(123456)).isFalse();
+    }
+
+    @Test
+    @DisplayName("Paginated list of beers")
+    void testListBeersWithPagination() {
+        // Create several beers to test pagination
+        BeerDto beer1 = createTestBeer("Alpha Beer", "IPA");
+        BeerDto beer2 = createTestBeer("Beta Brew", "Lager");
+        BeerDto beer3 = createTestBeer("Alpha Ale", "Ale");
+
+        // Test default pagination without filter
+        Page<BeerDto> firstPage = beerService.listBeers(null,
+                PageRequest.of(0, 2, Sort.by("beerName")));
+
+        // Verify pagination works
+        assertThat(firstPage.getContent()).hasSize(2);
+        assertThat(firstPage.getTotalElements()).isGreaterThanOrEqualTo(3);
+        assertThat(firstPage.getTotalPages()).isGreaterThanOrEqualTo(2);
+
+        // Verify sorting works
+        assertThat(firstPage.getContent().get(0).getBeerName()).startsWith("A");
+    }
+
+    @Test
+    @DisplayName("Filtered list of beers by beer name")
+    void testListBeersWithNameFilter() {
+        // Create beers with specific names to test filtering
+        BeerDto beer1 = createTestBeer("Special Test IPA", "IPA");
+        BeerDto beer2 = createTestBeer("Another Beer", "Lager");
+        BeerDto beer3 = createTestBeer("Test Ale", "Ale");
+
+        // Test filtering by "Test" in the name
+        Page<BeerDto> filteredPage = beerService.listBeers("Test",
+                PageRequest.of(0, 10));
+
+        // Verify filtering works
+        assertThat(filteredPage.getTotalElements()).isGreaterThanOrEqualTo(2);
+        filteredPage.getContent().forEach(beer ->
+            assertThat(beer.getBeerName().toLowerCase()).contains("test")
+        );
+
+        // Test with a specific non-matching name
+        Page<BeerDto> emptyResult = beerService.listBeers("NonExistentBeerName",
+                PageRequest.of(0, 10));
+        assertThat(emptyResult.getTotalElements()).isEqualTo(0);
+        assertThat(emptyResult.getContent()).isEmpty();
+    }
+
+    private BeerDto createTestBeer(String name, String style) {
+        // Ensure unique UPC by using both name and current time
+        return beerService.createBeer(BeerDto.builder()
+                .beerName(name)
+                .beerStyle(style)
+                .upc("test-" + name.replace(" ", "-").toLowerCase() + "-" + System.nanoTime())
+                .quantityOnHand(10)
+                .price(new BigDecimal("4.99"))
+                .build());
     }
 }
