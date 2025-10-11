@@ -77,6 +77,29 @@ put:
     '404':
       description: Beer with the specified ID not found
 
+patch:
+  tags:
+    - Beer
+  summary: Partially update a beer
+  operationId: patchBeer
+  description: Updates only the provided non-null fields of a beer
+  requestBody:
+    description: Beer patch object containing only the fields to update
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/BeerPatchDto.yaml'
+  responses:
+    '200':
+      description: Beer successfully updated
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/BeerDto.yaml'
+    '404':
+      description: Beer with the specified ID not found
+
 delete:
   tags:
     - Beer

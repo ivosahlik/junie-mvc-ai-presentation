@@ -1,6 +1,7 @@
 package cz.ivosahlik.juniemvcaipresentation.controllers;
 
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerPatchDto;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -317,5 +318,52 @@ class BeerControllerTest {
                 .andExpect(jsonPath("$.content[0].beerName", is("Combo IPA")))
                 .andExpect(jsonPath("$.content[0].beerStyle", is("IPA")))
                 .andExpect(jsonPath("$.totalElements", is(1)));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/v1/beers/{id} partially updates a beer and returns 200")
+    void testPatchBeerSuccess() throws Exception {
+        // Create a beer patch with only some fields
+        BeerPatchDto patchDto = BeerPatchDto.builder()
+                .beerName("Patched Beer Name")
+                .price(new BigDecimal("8.99"))
+                .build();
+
+        // Create an expected result after patching
+        BeerDto patchedBeer = sampleBeerDtoWithId(3);
+        patchedBeer.setBeerName("Patched Beer Name");
+        patchedBeer.setPrice(new BigDecimal("8.99"));
+
+        // Mock the service method
+        given(beerService.patchBeer(eq(3), any(BeerPatchDto.class))).willReturn(Optional.of(patchedBeer));
+
+        // Perform the PATCH request
+        mockMvc.perform(patch("/api/v1/beers/3")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patchDto)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.beerName", is("Patched Beer Name")))
+                .andExpect(jsonPath("$.price", is(8.99)))
+                .andExpect(jsonPath("$.beerStyle", is("Lager"))); // Original value preserved
+    }
+
+    @Test
+    @DisplayName("PATCH /api/v1/beers/{id} returns 404 when beer does not exist")
+    void testPatchBeerNotFound() throws Exception {
+        // Create a beer patch
+        BeerPatchDto patchDto = BeerPatchDto.builder()
+                .beerName("Patched Beer Name")
+                .build();
+
+        // Mock the service method to return empty
+        given(beerService.patchBeer(eq(999), any(BeerPatchDto.class))).willReturn(Optional.empty());
+
+        // Perform the PATCH request and expect 404
+        mockMvc.perform(patch("/api/v1/beers/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(patchDto)))
+                .andExpect(status().isNotFound());
     }
 }

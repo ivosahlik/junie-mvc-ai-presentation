@@ -1,0 +1,57 @@
+type: object
+description: DTO for partial updates of a beer product - all fields are optional
+properties:
+  id:
+    type: integer
+    format: int32
+    description: Unique identifier for the beer
+    readOnly: true
+    example: 123
+  version:
+    type: integer
+    format: int32
+    description: Version number for optimistic locking
+    readOnly: true
+    example: 1
+  beerName:
+    type: string
+    maxLength: 255
+    description: Name of the beer
+    example: "Hoppy IPA"
+  beerStyle:
+    type: string
+    maxLength: 100
+    description: Style or category of the beer
+    example: "India Pale Ale"
+  upc:
+    type: string
+    maxLength: 50
+    description: Universal Product Code - unique product identifier
+    example: "0631234200036"
+  quantityOnHand:
+    type: integer
+    format: int32
+    description: Current inventory quantity available
+    example: 150
+  price:
+    type: number
+    format: decimal
+    description: Price per unit in the default currency
+    example: 12.99
+  description:
+    type: string
+    maxLength: 1000
+    description: Detailed description of the beer
+    example: "A hoppy IPA with citrus notes and a smooth finish."
+  createdDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer was created
+    readOnly: true
+    example: "2025-10-09T14:30:00Z"
+  updateDate:
+    type: string
+    format: date-time
+    description: Date and time when the beer was last updated
+    readOnly: true
+    example: "2025-10-10T09:15:00Z"

@@ -1,6 +1,7 @@
 package cz.ivosahlik.juniemvcaipresentation.controllers;
 
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerPatchDto;
 import cz.ivosahlik.juniemvcaipresentation.services.BeerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,5 +98,32 @@ class BeerController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @Operation(
+        summary = "Partially update a beer",
+        description = "Updates only the provided non-null fields of a beer",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Beer successfully updated",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = BeerDto.class))
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Beer not found"
+            )
+        }
+    )
+    @PatchMapping("/{id}")
+    public ResponseEntity<BeerDto> patchBeer(
+            @Parameter(description = "Beer ID", required = true)
+            @PathVariable Integer id,
+            @Parameter(description = "Beer fields to update", required = true)
+            @RequestBody BeerPatchDto beerPatchDto) {
+        return beerService.patchBeer(id, beerPatchDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

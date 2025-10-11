@@ -3,6 +3,7 @@ package cz.ivosahlik.juniemvcaipresentation.services;
 import cz.ivosahlik.juniemvcaipresentation.entities.Beer;
 import cz.ivosahlik.juniemvcaipresentation.mappers.BeerMapper;
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerPatchDto;
 import cz.ivosahlik.juniemvcaipresentation.repositories.BeerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,5 +83,15 @@ public class BeerServiceImpl implements BeerService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public Optional<BeerDto> patchBeer(Integer id, BeerPatchDto beerPatchDto) {
+        return beerRepository.findById(id).map(existing -> {
+            beerMapper.patchEntityFromDto(beerPatchDto, existing);
+            Beer savedBeer = beerRepository.save(existing);
+            return beerMapper.toDto(savedBeer);
+        });
     }
 }

@@ -1,6 +1,7 @@
 package cz.ivosahlik.juniemvcaipresentation.services;
 
 import cz.ivosahlik.juniemvcaipresentation.models.BeerDto;
+import cz.ivosahlik.juniemvcaipresentation.models.BeerPatchDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -188,5 +189,46 @@ class BeerServiceImplTest {
                 .quantityOnHand(10)
                 .price(new BigDecimal("4.99"))
                 .build());
+    }
+
+    @Test
+    @DisplayName("Patch Beer - partial update with some fields")
+    void testPatchBeerPartialUpdate() {
+        // Create a test beer
+        BeerDto original = createTestBeer("Patch Test Beer", "IPA");
+        assertThat(original.getId()).isNotNull();
+
+        // Create a patch with only some fields
+        BeerPatchDto patchDto = BeerPatchDto.builder()
+                .beerName("Updated Patch Beer")
+                .price(new BigDecimal("7.99"))
+                // Deliberately leave other fields null
+                .build();
+
+        // Apply the patch
+        Optional<BeerDto> patched = beerService.patchBeer(original.getId(), patchDto);
+
+        // Verify the patch was applied correctly
+        assertThat(patched).isPresent();
+        assertThat(patched.get().getBeerName()).isEqualTo("Updated Patch Beer"); // Updated
+        assertThat(patched.get().getPrice()).isEqualTo(new BigDecimal("7.99")); // Updated
+        assertThat(patched.get().getBeerStyle()).isEqualTo("IPA"); // Unchanged
+        assertThat(patched.get().getUpc()).isEqualTo(original.getUpc()); // Unchanged
+        assertThat(patched.get().getQuantityOnHand()).isEqualTo(10); // Unchanged
+    }
+
+    @Test
+    @DisplayName("Patch Beer - not found")
+    void testPatchBeerNotFound() {
+        // Create a patch DTO
+        BeerPatchDto patchDto = BeerPatchDto.builder()
+                .beerName("Not Found Beer")
+                .build();
+
+        // Try to patch a non-existent beer
+        Optional<BeerDto> result = beerService.patchBeer(999999, patchDto);
+
+        // Verify the result is empty
+        assertThat(result).isEmpty();
     }
 }
