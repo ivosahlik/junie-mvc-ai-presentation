@@ -71,6 +71,12 @@ paths:
     $ref: '../paths/api_v1_customers.yaml'
   '/api/v1/customers/{id}':
     $ref: '../paths/api_v1_customers_{id}.yaml'
+  '/api/v1/customers/search/by-name':
+    $ref: '../paths/api_v1_customers_search_by-name.yaml'
+  '/api/v1/beer-orders/{beerOrderId}/shipments':
+    $ref: '../paths/beer-orders_{beerOrderId}_shipments.yaml'
+  '/api/v1/beer-orders/{beerOrderId}/shipments/{id}':
+    $ref: '../paths/beer-orders_{beerOrderId}_shipments_{id}.yaml'
 
 security:
   - BearerAuth: []

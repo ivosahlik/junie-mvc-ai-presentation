@@ -1,0 +1,43 @@
+get:
+  tags:
+    - Customer
+  summary: Search customers by name
+  operationId: searchCustomersByName
+  description: Searches for customers whose names contain the provided search term (case insensitive)
+  parameters:
+    - name: name
+      in: query
+      required: true
+      description: The name or partial name to search for
+      schema:
+        type: string
+        example: "John"
+  responses:
+    '200':
+      description: List of matching customers successfully retrieved
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../components/schemas/CustomerDto.yaml'
+    '401':
+      description: Unauthorized - Authentication token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"
+    '403':
+      description: Forbidden - Not enough permissions to access the resource
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Access denied"
