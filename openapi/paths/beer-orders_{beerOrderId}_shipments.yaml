@@ -1,0 +1,57 @@
+get:
+  tags:
+    - beer-order-shipments
+  summary: Get all shipments for a beer order
+  description: Retrieves all shipments associated with a specific beer order
+  operationId: getBeerOrderShipments
+  parameters:
+    - name: beerOrderId
+      in: path
+      description: ID of the beer order
+      required: true
+      schema:
+        type: integer
+        format: int32
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/BeerOrderShipment.yaml
+    '404':
+      description: Beer order not found
+
+post:
+  tags:
+    - beer-order-shipments
+  summary: Create a new shipment for a beer order
+  description: Creates a new shipment record associated with a specific beer order
+  operationId: createBeerOrderShipment
+  parameters:
+    - name: beerOrderId
+      in: path
+      description: ID of the beer order
+      required: true
+      schema:
+        type: integer
+        format: int32
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/BeerOrderShipment.yaml
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/BeerOrderShipment.yaml
+    '400':
+      description: Bad request
+    '404':
+      description: Beer order not found

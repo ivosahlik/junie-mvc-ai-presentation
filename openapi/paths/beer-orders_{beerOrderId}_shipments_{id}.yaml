@@ -1,0 +1,96 @@
+get:
+  tags:
+    - beer-order-shipments
+  summary: Get a specific shipment
+  description: Retrieves a specific shipment by its ID
+  operationId: getBeerOrderShipmentById
+  parameters:
+    - name: beerOrderId
+      in: path
+      description: ID of the beer order
+      required: true
+      schema:
+        type: integer
+        format: int32
+    - name: id
+      in: path
+      description: ID of the shipment
+      required: true
+      schema:
+        type: integer
+        format: int32
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/BeerOrderShipment.yaml
+    '404':
+      description: Shipment not found
+
+put:
+  tags:
+    - beer-order-shipments
+  summary: Update a shipment
+  description: Updates an existing shipment with the provided information
+  operationId: updateBeerOrderShipment
+  parameters:
+    - name: beerOrderId
+      in: path
+      description: ID of the beer order
+      required: true
+      schema:
+        type: integer
+        format: int32
+    - name: id
+      in: path
+      description: ID of the shipment to update
+      required: true
+      schema:
+        type: integer
+        format: int32
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/BeerOrderShipment.yaml
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/BeerOrderShipment.yaml
+    '400':
+      description: Bad request
+    '404':
+      description: Shipment not found
+
+delete:
+  tags:
+    - beer-order-shipments
+  summary: Delete a shipment
+  description: Deletes a specific shipment by its ID
+  operationId: deleteBeerOrderShipment
+  parameters:
+    - name: beerOrderId
+      in: path
+      description: ID of the beer order
+      required: true
+      schema:
+        type: integer
+        format: int32
+    - name: id
+      in: path
+      description: ID of the shipment to delete
+      required: true
+      schema:
+        type: integer
+        format: int32
+  responses:
+    '204':
+      description: No Content
+    '404':
+      description: Shipment not found
