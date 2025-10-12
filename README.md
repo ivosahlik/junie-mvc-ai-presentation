@@ -77,14 +77,3 @@ Refactor BeerController createBeer method, remove httpheader, add @ResponseStatu
 Inspect the BeerController. Add API Endpoints for update and delete. Create new service methods. Create additional
 MockMVC Tests for the new API Operations. Create a unit test to test all service operations.
 
-## Plan
-
-1. Inspect current BeerService and BeerServiceImpl to see available methods and patterns.
-2. Update service layer.
-- Add updateBeer(Integer id, Beer beer) to BeerService and implement in BeerServiceImpl returning Optional<Beer>.
-- Add deleteBeer(Integer id) to BeerService and implement in BeerServiceImpl returning boolean.
-3. Update BeerController with PUT and DELETE endpoints, including proper HTTP status handling (200 for update success, 404 when not found; 204 for delete success, 404 when not found).
-4. Add MockMVC tests for update and delete scenarios (success and not found).
-5. Add a unit test for BeerService covering create, getById, list, update, and delete using in-memory H2 with @SpringBootTest.
-6. Run all tests and verify passing.
-7. Summarize changes and submit.
