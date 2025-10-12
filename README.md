@@ -143,39 +143,3 @@ INFO: https://youtrack.jetbrains.com/articles/SUPPORT-A-2278/Junie-does-not-foll
 run prompts, add plan.md
 
 guidelines.md doesnt work -> use model SONNET 3.7 or update junie plugin
-
-
-
-
-
-------------------------------------------------------------------------------------------------------------------------
-
-Ask ChatGPT
-
-## How to run tests locally
-
-Prerequisites:
-
-- Java 21 installed (JAVA_HOME pointing to JDK 21)
-- Maven 3.9+ installed (or use the Maven Wrapper provided in the repo)
-
-Commands:
-
-- Using installed Maven:
-    - mvn -q -DskipTests=false test
-- Using Maven Wrapper (recommended, cross-platform):
-    - macOS/Linux: ./mvnw -q -DskipTests=false test
-    - Windows (PowerShell/CMD): mvnw.cmd -q -DskipTests=false test
-
-What this does:
-
-- Starts an in-memory H2 database for tests (configured via src/test/resources/application.properties)
-- Creates and tears down schema automatically (spring.jpa.hibernate.ddl-auto=create-drop)
-- Runs JUnit 5 tests (Spring Boot manages Surefire/JUnit versions)
-
-Troubleshooting:
-
-- Ensure no local database configuration overrides are present in environment variables or IDE run configurations.
-- If you see Flyway errors about missing migrations, confirm tests are using src/test/resources/application.properties
-  where spring.flyway.enabled=false.
-- If you have multiple JDKs, run: java -version and mvn -v to verify Java 21 is active.
