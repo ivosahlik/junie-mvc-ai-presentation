@@ -116,7 +116,7 @@ const RootLayout: React.FC = () => {
         {/* Footer */}
         <footer className="border-t bg-white py-6">
           <div className="px-6 text-center text-sm text-gray-600">
-            &copy; {new Date().getFullYear()} Beer Service. All rights reserved.
+            &copy; {new Date().getFullYear()} Beer Service, for presentation purposes. All rights reserved.
           </div>
         </footer>
       </div>
