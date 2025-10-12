@@ -174,3 +174,24 @@ Presentation Tasks:
 - Use Junie to create a task list
 
 - Have Junie write the code
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+Redocly je nástroj pro práci s OpenAPI specifikacemi. Slouží k vytváření, validaci, bundlování a generování dokumentace API z OpenAPI/Swagger souborů.
+Hlavní funkce Redocly CLI:
+Preview dokumentace (redocly preview-docs) - interaktivní náhled API dokumentace v prohlížeči
+Linting (redocly lint) - kontrola kvality a správnosti OpenAPI specifikace
+Bundlování (redocly bundle) - sloučení více YAML/JSON souborů do jednoho
+Generování dokumentace - krásná, interaktivní HTML dokumentace API
+Ve vašem projektu:
+Podle package.json máte Redocly nakonfigurované s těmito skripty:
+npm start - spustí live preview dokumentace
+npm run build - vytvoří bundle do dist/bundle.yaml
+npm run test - zkontroluje validitu OpenAPI specifikace
+<hr></hr>
+Chcete, abych se podíval, jaké OpenAPI specifikace máte ve složce openapi/? Můžu vám pomoct s:
+Zobrazením stávající API dokumentace
+Přidáním nových endpointů
+Validací specifikace
+Generováním kódu z OpenAPI
