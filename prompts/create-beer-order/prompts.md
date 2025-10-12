@@ -1,4 +1,5 @@
-Analyze the attached ERD image. Create detailed instructions for a Java developer to implement the relationships in JPA with Lombok.
+Analyze the attached ERD image. Create detailed instructions to requirements-draft.md for a Java developer 
+to implement the relationships in JPA with Lombok.
 
 ----------------------------------------
 

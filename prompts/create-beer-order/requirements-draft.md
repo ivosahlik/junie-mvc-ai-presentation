@@ -1,164 +1,156 @@
-### JPA Entity Implementation Instructions with Lombok
+# JPA Relationship Implementation Requirements
 
-Based on the ERD diagram, I'll provide detailed instructions for implementing the three entities (Beer, BeerOrder, and BeerOrderLine) using JPA annotations with Lombok.
+## Overview
+Based on the provided Entity Relationship Diagram (ERD), this document outlines the requirements for implementing JPA entities with Lombok for a beer ordering system. The system consists of three main entities: `Beer`, `BeerOrder`, and `BeerOrderLine`, with specific relationships between them.
 
-#### Common Base Setup
+## Entities and Relationships
 
-First, let's define a base entity class to handle common fields:
+### 1. Beer Entity
+The existing `Beer` entity should be maintained with its current structure:
+- Primary Key: `id` (Integer)
+- Version: `version` (Integer) for optimistic locking
+- Properties:
+  - `beerName` (String)
+  - `beerStyle` (String)
+  - `upc` (String, unique)
+  - `quantityOnHand` (Integer)
+  - `price` (BigDecimal)
+  - `createdDate` (LocalDateTime)
+  - `updateDate` (LocalDateTime)
+
+**New Relationship:**
+- One-to-Many relationship with `BeerOrderLine`
+
+### 2. BeerOrder Entity
+Create a new `BeerOrder` entity with the following:
+- Primary Key: `id` (Integer)
+- Version: `version` (Integer) for optimistic locking
+- Properties:
+  - `customerRef` (String)
+  - `paymentAmount` (BigDecimal)
+  - `status` (String)
+  - `createdDate` (LocalDateTime)
+  - `updateDate` (LocalDateTime)
+
+**Relationships:**
+- One-to-Many relationship with `BeerOrderLine`
+
+### 3. BeerOrderLine Entity
+Create a new `BeerOrderLine` entity with the following:
+- Primary Key: `id` (Integer)
+- Version: `version` (Integer) for optimistic locking
+- Properties:
+  - `orderQuantity` (Integer)
+  - `quantityAllocated` (Integer)
+  - `status` (String)
+  - `createdDate` (LocalDateTime)
+  - `updateDate` (LocalDateTime)
+
+**Relationships:**
+- Many-to-One relationship with `Beer`
+- Many-to-One relationship with `BeerOrder`
+
+## Implementation Guidelines
+
+### JPA Annotations
+1. **Entity Annotations:**
+   - Use `@Entity` for all entity classes
+   - Use `@Table(name = "entity_name")` to specify table names
+
+2. **Primary Key:**
+   - Use `@Id` and `@GeneratedValue(strategy = GenerationType.IDENTITY)` for primary keys
+
+3. **Version Control:**
+   - Use `@Version` for optimistic locking
+
+4. **Timestamp Fields:**
+   - Use `@CreationTimestamp` for `createdDate` fields
+   - Use `@UpdateTimestamp` for `updateDate` fields
+   - Mark `createdDate` as non-updatable with `@Column(updatable = false)`
+
+5. **Relationship Mappings:**
+   - For One-to-Many relationships:
+     - Use `@OneToMany(mappedBy = "parentEntity", cascade = CascadeType.ALL)` on the parent side
+     - Initialize collections to empty collections in constructors or with field initialization
+   
+   - For Many-to-One relationships:
+     - Use `@ManyToOne` on the child side
+     - Use `@JoinColumn(name = "parent_id")` to specify the foreign key column
+
+### Lombok Annotations
+1. **Class-level Annotations:**
+   - Use `@Getter` and `@Setter` for all entity classes
+   - Use `@NoArgsConstructor` and `@AllArgsConstructor`
+   - Use `@Builder` for builder pattern support
+   - Consider using `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` with `@EqualsAndHashCode.Include` on ID fields
+
+2. **Avoid Lombok Circular References:**
+   - Use `@ToString.Exclude` on collection fields to prevent circular references
+   - Similarly, exclude bidirectional relationship fields from `@EqualsAndHashCode` calculations
+
+## Code Example (Beer Entity with Relationship)
 
 ```java
-@MappedSuperclass
 @Getter
 @Setter
-public abstract class BaseEntity {
-    
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "beer")
+public class Beer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Version
     private Integer version;
-    
+
+    @Column(length = 255)
+    private String beerName;
+
+    @Column(length = 100)
+    private String beerStyle;
+
+    @Column(length = 50, unique = true)
+    private String upc;
+
+    private Integer quantityOnHand;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdDate;
-    
+
     @UpdateTimestamp
     private LocalDateTime updateDate;
-}
-```
-
-#### Beer Entity
-
-```java
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Beer extends BaseEntity {
     
-    private String beerName;
-    private String beerStyle;
-    private String upc;
-    private Integer quantityOnHand;
-    
-    @Column(precision = 19, scale = 2)
-    private BigDecimal price;
-    
-    // Bidirectional relationship with BeerOrderLine
     @OneToMany(mappedBy = "beer")
-    @ToString.Exclude
-    private Set<BeerOrderLine> beerOrderLines = new HashSet<>();
-}
-```
-
-#### BeerOrder Entity
-
-```java
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class BeerOrder extends BaseEntity {
-    
-    private String customerRef;
-    
-    @Column(precision = 19, scale = 2)
-    private BigDecimal paymentAmount;
-    
-    private String status;
-    
-    // Bidirectional relationship with BeerOrderLine
-    @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @ToString.Exclude
     private Set<BeerOrderLine> beerOrderLines = new HashSet<>();
-    
-    // Utility methods to maintain the relationship consistency
-    public void addBeerOrderLine(BeerOrderLine beerOrderLine) {
-        if (beerOrderLines == null) {
-            beerOrderLines = new HashSet<>();
-        }
-        
-        beerOrderLines.add(beerOrderLine);
-        beerOrderLine.setBeerOrder(this);
-    }
-    
-    public void removeBeerOrderLine(BeerOrderLine beerOrderLine) {
-        beerOrderLines.remove(beerOrderLine);
-        beerOrderLine.setBeerOrder(null);
-    }
 }
 ```
 
-#### BeerOrderLine Entity
+## Additional Considerations
 
-```java
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class BeerOrderLine extends BaseEntity {
-    
-    private Integer orderQuantity;
-    private Integer quantityAllocated;
-    private String status;
-    
-    // Many-to-one relationship with BeerOrder
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "beer_order_id")
-    @ToString.Exclude
-    private BeerOrder beerOrder;
-    
-    // Many-to-one relationship with Beer
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "beer_id")
-    @ToString.Exclude
-    private Beer beer;
-}
-```
+1. **Data Integrity:**
+   - Ensure proper cascade types are used to maintain data integrity
+   - Consider using `@JoinColumn` with `foreignKey` attribute to define foreign key constraints
 
-### Implementation Notes
+2. **Bidirectional Relationship Management:**
+   - Implement helper methods to manage both sides of bidirectional relationships
+   - Example: addBeerOrderLine(BeerOrderLine line) that sets both sides of the relationship
 
-1. **Lombok Annotations**:
-    - `@Getter` and `@Setter`: Generate getters and setters
-    - `@NoArgsConstructor`: Generate a no-args constructor
-    - `@AllArgsConstructor`: Generate a constructor with all fields
-    - `@Builder`: Enable the builder pattern
-    - `@ToString.Exclude`: Prevent circular references in toString()
+3. **Database Indexing:**
+   - Consider adding indexes for frequently queried columns using `@Index` in the `@Table` annotation
 
-2. **JPA Annotations**:
-    - `@Entity`: Mark class as JPA entity
-    - `@MappedSuperclass`: Base class for entities, not an entity itself
-    - `@Id`: Primary key field
-    - `@GeneratedValue`: Auto-generate primary keys
-    - `@Version`: Optimistic locking
-    - `@OneToMany`/`@ManyToOne`: Define relationships
-    - `@JoinColumn`: Specify the foreign key column
-    - `@CreationTimestamp`/`@UpdateTimestamp`: Auto-manage timestamps
-    - `@Column`: Configure database column properties
+4. **Audit Information:**
+   - The `createdDate` and `updateDate` fields provide basic auditing
+   - Consider implementing JPA Auditing with `@CreatedBy` and `@LastModifiedBy` for enhanced auditing
 
-3. **Relationships**:
-    - **Beer to BeerOrderLine**: One-to-Many (one beer can be in many order lines)
-    - **BeerOrder to BeerOrderLine**: One-to-Many (one order has many order lines)
-    - **BeerOrderLine to Beer**: Many-to-One (many order lines can refer to the same beer)
-    - **BeerOrderLine to BeerOrder**: Many-to-One (many order lines belong to the same order)
-
-4. **Best Practices**:
-    - Use `CascadeType.ALL` and `orphanRemoval = true` for parent-child relationships
-    - Use `FetchType.LAZY` for performance optimization
-    - Add utility methods in the parent entity to maintain relationship consistency
-    - Use `Builder.Default` to initialize collections in builder pattern
-    - Exclude bidirectional relationships from `toString()` to prevent infinite recursion
-
-5. **Data Types**:
-    - Use `BigDecimal` with proper precision for monetary values
-    - Use `LocalDateTime` for date-time fields
-
-This implementation follows Spring Boot best practices for JPA entities using constructor injection and leveraging Lombok to reduce boilerplate code.
+5. **Status Management:**
+   - Consider using an enum for the `status` field in both `BeerOrder` and `BeerOrderLine` instead of a String
