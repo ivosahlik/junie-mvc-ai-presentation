@@ -56,6 +56,8 @@ AI CHAT - add mapstruct dependencies
 
 ------------------------------------------------------------------------------------------------------------------------
 
+## Create guidelines.md from prompt
+
 
 Analyze the project structure and tech stack, and create a .junie/guidelines.md file with concise, well-structured
 information to help new developers. Include guidance on organizing the structure, running tests, executing scripts, and
